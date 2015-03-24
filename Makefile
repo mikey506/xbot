@@ -1,0 +1,19 @@
+CC=gcc
+CFLAGS=-c -lconfig -I./lib
+BINFLAGS=-lconfig
+SRC=./src
+OBJ=./build
+OBJECTS=$(OBJ)/*.o
+EXEC=xbot
+
+main:
+	@rm -rf build
+	@mkdir build
+	$(CC) $(CFLAGS) $(SRC)/main.c -o $(OBJ)/main.o
+	$(CC) $(CFLAGS) $(SRC)/irc.c -o $(OBJ)/irc.o
+	$(CC) $(CFLAGS) $(SRC)/util.c -o $(OBJ)/util.o
+	$(CC) -o $(EXEC) $(OBJECTS) $(BINFLAGS)
+	@echo "All Done!"
+
+clean:
+	@rm -rf build $(EXEC)
