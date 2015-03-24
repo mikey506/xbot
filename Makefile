@@ -9,9 +9,10 @@ EXEC=xbot
 main:
 	@rm -rf build
 	@mkdir build
-	$(CC) $(CFLAGS) $(SRC)/main.c -o $(OBJ)/main.o
-	$(CC) $(CFLAGS) $(SRC)/irc.c -o $(OBJ)/irc.o
-	$(CC) $(CFLAGS) $(SRC)/util.c -o $(OBJ)/util.o
+	$(CC) $(CFLAGS) $(SRC)/main.c   -o $(OBJ)/main.o
+	$(CC) $(CFLAGS) $(SRC)/irc.c    -o $(OBJ)/irc.o
+	$(CC) $(CFLAGS) $(SRC)/util.c   -o $(OBJ)/util.o
+	$(CC) $(CFLAGS) $(SRC)/events.c -o $(OBJ)/events.o
 	$(CC) -o $(EXEC) $(OBJECTS) $(BINFLAGS)
 	@echo "All Done!"
 

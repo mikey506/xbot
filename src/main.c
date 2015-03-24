@@ -43,6 +43,9 @@ int main()
 	if (config_lookup_string(cf, "server.port", &base))
 		bot.port = (char *)base;
 
+	if (config_lookup_string(cf, "bot.admin", &base))
+		bot.admin = (char *)base;
+
 	// Connect to the server
 	printf("Connecting to %s...\n", bot.host);
 	irc_connect(&bot);

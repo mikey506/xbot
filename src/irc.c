@@ -7,6 +7,7 @@
 
 #include "irc.h"
 #include "util.h"
+#include "events.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -61,6 +62,11 @@ void irc_auth(struct irc_conn *bot)
 	fflush(bot->srv_fd);
 }
 
+void irc_notice(struct irc_conn *bot, char *to, char *msg)
+{
+	irc_raw(bot, "NOTICE %s :%s", to, msg);
+}
+
 void irc_raw(struct irc_conn *bot, char *fmt, ...)
 {
 	va_list ap;
@@ -108,10 +114,13 @@ void irc_parse_raw(struct irc_conn *bot, char *raw)
 
 	if (!strcmp("PRIVMSG", raw))
 	{
-		//handle_privmsg(user, par, text)
-		if (!strcmp("Dark_Aaron", user))
+		if (strcmp(user, bot->nick))
 		{
-			irc_raw(bot, "JOIN #bots");
+			handle_self_privmsg(bot, user, text);
+		}
+		else
+		{
+			handle_chan_privmsg(bot, user, par, text);
 		}
 	}
 	else if (!strcmp("PING", raw))
