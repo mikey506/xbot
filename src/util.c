@@ -9,6 +9,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 void eprint(char *fmt, ...)
 {

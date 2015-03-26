@@ -9,7 +9,15 @@
 #include <sys/select.h>
 #include <libconfig.h>
 #include "irc.h"
+#include "util.h"
+#include "events.h"
 
+
+void hello_cmd(struct irc_conn *bot, char *user, char *text)
+{
+	printf("cmd exec\n");
+	irc_notice(bot, user, "Hello");
+}
 
 int main()
 {
@@ -18,6 +26,8 @@ int main()
 	const config_setting_t *retries;
 	const char *base = NULL;
 	struct irc_conn bot;
+
+	init_events();
 
 	// Init the config parser
 	cf = &cfg;
@@ -53,6 +63,9 @@ int main()
 
 	// Free the config before entering the main loop
 	config_destroy(cf);
+
+	add_handler(PRIVMSG_SELF, hello_cmd);
+	add_handler(PRIVMSG_SELF, hello_cmd);
 
 	for (;;)
 	{

@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-c -lconfig -I./lib
-BINFLAGS=-lconfig
+CFLAGS=-g -std=gnu99 -c -lconfig -I./lib
+BINFLAGS=-g -lconfig
 SRC=./src
 OBJ=./build
 OBJECTS=$(OBJ)/*.o
