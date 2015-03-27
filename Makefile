@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-g -std=gnu99 -c -lconfig -I./lib
-BINFLAGS=-g -lconfig
+CFLAGS=-g  -std=gnu99 -c -lconfig -ldl -I./lib
+BINFLAGS=-g -rdynamic -ldl -lconfig 
 SRC=./src
 OBJ=./build
 OBJECTS=$(OBJ)/*.o
@@ -13,6 +13,7 @@ main:
 	$(CC) $(CFLAGS) $(SRC)/irc.c    -o $(OBJ)/irc.o
 	$(CC) $(CFLAGS) $(SRC)/util.c   -o $(OBJ)/util.o
 	$(CC) $(CFLAGS) $(SRC)/events.c -o $(OBJ)/events.o
+	$(CC) $(CFLAGS) $(SRC)/module.c -o $(OBJ)/module.o
 	$(CC) -o $(EXEC) $(OBJECTS) $(BINFLAGS)
 	@echo "All Done!"
 

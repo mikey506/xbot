@@ -28,6 +28,7 @@ struct irc_conn
 void irc_connect(struct irc_conn *bot);
 void irc_auth(struct irc_conn *bot);
 void irc_notice(struct irc_conn *bot, char *to, char *fmt, ...);
+void irc_privmsg(struct irc_conn *bot, char *to, char *fmt, ...);
 void irc_raw(struct irc_conn *bot, char *fmt, ...);
 void irc_parse_raw(struct irc_conn *bot, char *raw);
 

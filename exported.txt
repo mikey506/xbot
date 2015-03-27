@@ -1,0 +1,8 @@
+{
+	extern "C"
+	{
+		add_handler;
+		irc_privmsg;
+		irc_notice;
+	};
+}

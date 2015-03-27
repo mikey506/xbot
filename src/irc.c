@@ -75,6 +75,18 @@ void irc_notice(struct irc_conn *bot, char *to, char *fmt, ...)
 	irc_raw(bot, "NOTICE %s :%s", to, msg_);
 }
 
+void irc_privmsg(struct irc_conn *bot, char *to, char *fmt, ...)
+{
+	char msg_[4096];
+	va_list ap;
+
+	va_start(ap, fmt);
+	vsnprintf(msg_, sizeof msg_, fmt, ap);
+	va_end(ap);
+
+	irc_raw(bot, "PRIVMSG %s :%s", to, msg_);
+}
+
 void irc_raw(struct irc_conn *bot, char *fmt, ...)
 {
 	va_list ap;
@@ -122,7 +134,7 @@ void irc_parse_raw(struct irc_conn *bot, char *raw)
 
 	if (!strcmp("PRIVMSG", raw))
 	{
-		if (strcmp(user, bot->nick))
+		if (!strcmp(par, bot->nick))
 		{
 			handle_self_privmsg(bot, user, text);
 		}

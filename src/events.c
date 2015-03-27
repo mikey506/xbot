@@ -1,6 +1,7 @@
 #include "irc.h"
 #include "util.h"
 #include "events.h"
+#include "module.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,6 +30,7 @@ void init_events()
 
 void add_handler(int type, void *handler)
 {
+	printf("Installing handler @ %p [type: %i]\n", handler, type);
 	int handler_count;
 
 	if (type == PRIVMSG_SELF)
@@ -63,9 +65,11 @@ void handle_chan_privmsg(struct irc_conn *bot, char *user, char *chan, char *tex
 void handle_self_privmsg(struct irc_conn *bot, char *user, char *text)
 {
 	void (*handler)();
-	char *cmd, *arg;
+	char *cmd, *arg, *modpath;
 	cmd = text;
 	arg = skip(cmd, ' ');
+
+	modpath = (char *)malloc(sizeof(char)*500);
 
 	for (int i = 0; i < privmsg_self.count; i++)
 	{
@@ -90,12 +94,16 @@ void handle_self_privmsg(struct irc_conn *bot, char *user, char *text)
 		if (strcmp(bot->admin, user))
 		{
 			irc_notice(bot, user, "Loading module: mods/%s.so", arg);
+			sprintf(modpath, "./mods/%s.so", arg);
+			load_module(bot, user, PRIVMSG_SELF, modpath);
 		}
 		else
 		{
 			irc_notice(bot, user, "You are unauthorized to use this command.");
 		}
 	}
+
+	free(modpath);
 }
 
 void handle_join(struct irc_conn *bot, char *user, char *chan)

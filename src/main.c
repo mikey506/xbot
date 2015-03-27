@@ -64,8 +64,6 @@ int main()
 	// Free the config before entering the main loop
 	config_destroy(cf);
 
-	add_handler(PRIVMSG_SELF, hello_cmd);
-	add_handler(PRIVMSG_SELF, hello_cmd);
 
 	for (;;)
 	{

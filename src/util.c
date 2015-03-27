@@ -25,8 +25,6 @@ void eprint(char *fmt, ...)
 	{
 		fprintf(stderr, "%s\n", strerror(errno));
 	}
-
-	exit(1);
 }
 
 void strlcpy(char *to, const char *from, int len)
