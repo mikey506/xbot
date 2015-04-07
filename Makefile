@@ -6,6 +6,8 @@ OBJ=./build
 OBJECTS=$(OBJ)/*.o
 EXEC=xbot
 
+.PHONY: mods
+
 main:
 	@rm -rf build
 	@mkdir build
@@ -16,6 +18,9 @@ main:
 	$(CC) $(CFLAGS) $(SRC)/module.c -o $(OBJ)/module.o
 	$(CC) -o $(EXEC) $(OBJECTS) $(BINFLAGS)
 	@echo "All Done!"
+
+mods:
+	$(MAKE) -C mods/test
 
 clean:
 	@rm -rf build $(EXEC)
