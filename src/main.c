@@ -13,12 +13,6 @@
 #include "events.h"
 
 
-void hello_cmd(struct irc_conn *bot, char *user, char *text)
-{
-	printf("cmd exec\n");
-	irc_notice(bot, user, "Hello");
-}
-
 int main()
 {
 	fd_set rd;

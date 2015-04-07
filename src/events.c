@@ -58,20 +58,21 @@ void handle_chan_privmsg(struct irc_conn *bot, char *user, char *chan, char *tex
 	for (int i = 0; i < privmsg_chan.count; i++)
 	{
 		handler = privmsg_chan.handlers[i];
-		((void(*)())handler)(bot, user, chan, text);
+		(*handler)(bot, user, chan, text);
 	}
 }
 
 void handle_self_privmsg(struct irc_conn *bot, char *user, char *text)
 {
 	void (*handler)();
+	int i;
 	char *cmd, *arg, *modpath;
 	cmd = text;
 	arg = skip(cmd, ' ');
 
 	modpath = (char *)malloc(sizeof(char)*500);
 
-	for (int i = 0; i < privmsg_self.count; i++)
+	for (i = 0; i < privmsg_self.count; i++)
 	{
 		handler = privmsg_self.handlers[i];
 		((void(*)())handler)(bot, user, text);
@@ -86,6 +87,22 @@ void handle_self_privmsg(struct irc_conn *bot, char *user, char *text)
 		else
 		{
 			irc_notice(bot, user, "You are unauthorized to use this command.");
+		}
+	}
+
+	if (!strcmp("PRINT_HANDLERS", cmd))
+	{
+		if (strcmp(bot->admin, user))
+		{
+			for (i = 0; i < privmsg_chan.count; i++)
+			{
+				irc_notice(bot, user, "handler[%i:%i]: %p", i, privmsg_chan.type, privmsg_chan.handlers[i]);
+			}
+
+			for (i = 0; i < privmsg_self.count; i++)
+			{
+				irc_notice(bot, user, "handler[%i:%i]: %p", i, privmsg_self.type, privmsg_self.handlers[i]);
+			}
 		}
 	}
 

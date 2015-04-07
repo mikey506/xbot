@@ -5,14 +5,22 @@
 #include <stdlib.h>
 #include <dlfcn.h>
 
+void export_handler(void *handle, int stype, char *hname)
+{
+	void (*handler)(struct irc_conn *bot, char *user, char *chan, char *text);
+
+	*(void **)(&handler) = dlsym(handle, hname);
+	add_handler(stype, handler);
+}
+
 void load_module(struct irc_conn *bot, char *where, int stype, char *file)
 {
 	void *handle;
-	void (*mod_init)(struct irc_conn *bot, char *where, void (*ah)());
+	void (*mod_init)(void *handle, void (*export)());
 	char *error = (char *)malloc(sizeof(char *)*1024);
 
 
-	handle = dlopen(file, RTLD_NOW | RTLD_GLOBAL);
+	handle = dlopen(file, RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
 	if (!handle)
 	{
 		sprintf(error, "Error: %s", dlerror());
@@ -47,7 +55,7 @@ void load_module(struct irc_conn *bot, char *where, int stype, char *file)
 		}
 	}
 
-	(*mod_init)(bot, where);
+	(*mod_init)(handle, export_handler);
 
 	dlclose(handle);
 
