@@ -11,6 +11,7 @@ EXEC=xbot
 main:
 	@rm -rf build
 	@mkdir build
+	$(CC) $(CFLAGS) $(SRC)/config.c -o $(OBJ)/config.o
 	$(CC) $(CFLAGS) $(SRC)/main.c   -o $(OBJ)/main.o
 	$(CC) $(CFLAGS) $(SRC)/irc.c    -o $(OBJ)/irc.o
 	$(CC) $(CFLAGS) $(SRC)/util.c   -o $(OBJ)/util.o

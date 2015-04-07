@@ -17,7 +17,7 @@ void hello(struct irc_conn *bot, char *user, char *chan, char *text)
 	free(buf);
 }
 
-void mod_init(void *handle, void (*export)())
+void mod_init()
 {
-	export(handle, PRIVMSG_CHAN, "hello");
+	add_handler(PRIVMSG_CHAN, hello);
 }

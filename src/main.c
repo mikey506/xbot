@@ -6,57 +6,29 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sys/select.h>
-#include <libconfig.h>
+#include "config.h"
 #include "irc.h"
 #include "util.h"
 #include "events.h"
+#include "module.h"
 
 
 int main()
 {
 	fd_set rd;
-	config_t cfg, *cf;
-	const config_setting_t *retries;
-	const char *base = NULL;
 	struct irc_conn bot;
 
 	init_events();
 
-	// Init the config parser
-	cf = &cfg;
-	config_init(cf);
-
-	if (!config_read_file(cf, "xbot.cfg"))
-	{
-		printf("xbot.cfg:%d - %s\n",
-			config_error_line(cf),
-			config_error_text(cf));
-
-		config_destroy(cf);
-		return -1;
-	}
-
-	// Fill our bot struct with values from the config
-	if (config_lookup_string(cf, "bot.nick", &base))
-		strlcpy(bot.nick, base, sizeof bot.nick);
-
-	if (config_lookup_string(cf, "server.host", &base))
-		bot.host = (char *)base;
-
-	if (config_lookup_string(cf, "server.port", &base))
-		bot.port = (char *)base;
-
-	if (config_lookup_string(cf, "bot.admin", &base))
-		bot.admin = (char *)base;
+	// Read the config
+	bot = read_config(bot, "xbot.cfg");
 
 	// Connect to the server
 	printf("Connecting to %s...\n", bot.host);
 	irc_connect(&bot);
 	irc_auth(&bot);
-
-	// Free the config before entering the main loop
-	config_destroy(cf);
 
 
 	for (;;)

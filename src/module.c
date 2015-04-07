@@ -5,18 +5,10 @@
 #include <stdlib.h>
 #include <dlfcn.h>
 
-void export_handler(void *handle, int stype, char *hname)
-{
-	void (*handler)(struct irc_conn *bot, char *user, char *chan, char *text);
-
-	*(void **)(&handler) = dlsym(handle, hname);
-	add_handler(stype, handler);
-}
-
 void load_module(struct irc_conn *bot, char *where, int stype, char *file)
 {
 	void *handle;
-	void (*mod_init)(void *handle, void (*export)());
+	void (*mod_init)();
 	char *error = (char *)malloc(sizeof(char *)*1024);
 
 
@@ -25,7 +17,12 @@ void load_module(struct irc_conn *bot, char *where, int stype, char *file)
 	{
 		sprintf(error, "Error: %s", dlerror());
 
-		if (stype == PRIVMSG_CHAN)
+		if (stype == 3)
+		{
+			eprint("%s\n", error);
+			return;
+		}
+		else if (stype == PRIVMSG_CHAN)
 		{
 			irc_privmsg(bot, where, error);
 		}
@@ -45,7 +42,12 @@ void load_module(struct irc_conn *bot, char *where, int stype, char *file)
 	{
 		//sprintf(error, "Error: %s", error);
 		eprint("Error: %s\n", error);
-		if (stype == PRIVMSG_CHAN)
+
+		if (stype == 3)
+		{
+			return;
+		}
+		else if (stype == PRIVMSG_CHAN)
 		{
 			irc_privmsg(bot, where, error);
 		}
@@ -55,11 +57,17 @@ void load_module(struct irc_conn *bot, char *where, int stype, char *file)
 		}
 	}
 
-	(*mod_init)(handle, export_handler);
+	(*mod_init)();
 
 	dlclose(handle);
 
-	irc_privmsg(bot, where, "Module '%s' loaded.", file);
-
+	if (stype != 3)
+	{
+		irc_privmsg(bot, where, "Module '%s' loaded.", file);
+	}
+	else
+	{
+		printf("Module '%s' loaded.\n", file);
+	}
 	free(error);
 }

@@ -15,9 +15,9 @@ struct irc_conn
 
 	char nick[32];
 	char *admin;
-	char *host;
-	char *port;
-	char *real_name;
+	char host[256];
+	char port[5];
+	char real_name[512];
 
 	// I/O Buffers
 	char out[4096];
