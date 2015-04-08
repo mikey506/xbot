@@ -22,6 +22,7 @@ main:
 
 mods:
 	$(MAKE) -C mods/test
+	$(MAKE) -C mods/autojoin
 
 clean:
 	@rm -rf build $(EXEC)

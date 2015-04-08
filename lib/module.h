@@ -3,6 +3,6 @@
 
 #include "irc.h"
 
-void load_module(struct irc_conn *bot, char *where, int stype, char *file);
+void load_module(struct irc_conn *bot, char *where, char *stype, char *file);
 
 #endif

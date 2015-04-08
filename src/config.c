@@ -48,7 +48,7 @@ struct irc_conn read_config(struct irc_conn bot, char *file)
 	{
 		mod = config_setting_get_string_elem(autoload, n);
 		sprintf(modpath, "./mods/%s.so", mod);
-		load_module(&bot, "main", 3, modpath);
+		load_module(&bot, "main", "runtime", modpath);
 	}
 
 	config_destroy(cf);

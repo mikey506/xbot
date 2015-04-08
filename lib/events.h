@@ -3,19 +3,22 @@
 
 #include "irc.h"
 
-#define PRIVMSG_SELF    1
-#define PRIVMSG_CHAN    2
-#define JOIN            3
+#define PRIVMSG_SELF    "CMSG"
+#define PRIVMSG_CHAN    "PMSG"
+#define JOIN            "JOIN"
+#define IRC_CONNECTED   "001"
 
 struct handler
 {
-	int type;
+	char *type;
 	int count;
 	void **handlers;
 };
 
 void init_events();
-void add_handler(int type, void *handler);
+int add_handler(char *type, void *handler);
+void del_handler(int num, char *type);
+void handle_connected(struct irc_conn *bot, char *text);
 void handle_chan_privmsg(struct irc_conn *bot, char *user, char *chan, char *text);
 void handle_self_privmsg(struct irc_conn *bot, char *user, char *text);
 void handle_join(struct irc_conn *bot, char *user, char *chan);

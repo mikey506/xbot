@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int HANDLER = 0;
+
 void hello(struct irc_conn *bot, char *user, char *chan, char *text)
 {
 	char *buf = (char *)malloc(sizeof(char *) * 500);
@@ -11,7 +13,8 @@ void hello(struct irc_conn *bot, char *user, char *chan, char *text)
 
 	if (!strcmp(text, buf))
 	{
-		irc_privmsg(bot, chan, "hi %s", user);
+		irc_privmsg(bot, chan, "%i", HANDLER);
+		del_handler(HANDLER, PRIVMSG_CHAN);
 	}
 
 	free(buf);
@@ -19,5 +22,5 @@ void hello(struct irc_conn *bot, char *user, char *chan, char *text)
 
 void mod_init()
 {
-	add_handler(PRIVMSG_CHAN, hello);
+	HANDLER = add_handler(PRIVMSG_CHAN, hello);
 }

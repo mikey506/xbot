@@ -12,8 +12,6 @@
 #include "irc.h"
 #include "util.h"
 #include "events.h"
-#include "module.h"
-
 
 int main()
 {
@@ -29,7 +27,6 @@ int main()
 	printf("Connecting to %s...\n", bot.host);
 	irc_connect(&bot);
 	irc_auth(&bot);
-
 
 	for (;;)
 	{

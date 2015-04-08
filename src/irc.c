@@ -152,6 +152,10 @@ void irc_parse_raw(struct irc_conn *bot, char *raw)
 	{
 		irc_raw(bot, "PONG %s", text);
 	}
+	else if (!strcmp("001", raw))
+	{
+		handle_connected(bot, text);
+	}
 	else
 	{
 		if (!strcmp("NICK", raw) && !strcmp(user, bot->nick))

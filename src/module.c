@@ -3,9 +3,10 @@
 #include "events.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <dlfcn.h>
 
-void load_module(struct irc_conn *bot, char *where, int stype, char *file)
+void load_module(struct irc_conn *bot, char *where, char *stype, char *file)
 {
 	void *handle;
 	void (*mod_init)();
@@ -17,12 +18,12 @@ void load_module(struct irc_conn *bot, char *where, int stype, char *file)
 	{
 		sprintf(error, "Error: %s", dlerror());
 
-		if (stype == 3)
+		if (strcmp("runtime", stype))
 		{
 			eprint("%s\n", error);
 			return;
 		}
-		else if (stype == PRIVMSG_CHAN)
+		else if (strcmp(PRIVMSG_CHAN, stype))
 		{
 			irc_privmsg(bot, where, error);
 		}
@@ -43,11 +44,11 @@ void load_module(struct irc_conn *bot, char *where, int stype, char *file)
 		//sprintf(error, "Error: %s", error);
 		eprint("Error: %s\n", error);
 
-		if (stype == 3)
+		if (strcmp("runtime", stype))
 		{
 			return;
 		}
-		else if (stype == PRIVMSG_CHAN)
+		else if (strcmp(PRIVMSG_CHAN, stype))
 		{
 			irc_privmsg(bot, where, error);
 		}
@@ -61,7 +62,7 @@ void load_module(struct irc_conn *bot, char *where, int stype, char *file)
 
 	dlclose(handle);
 
-	if (stype != 3)
+	if (strcmp("runtime", stype))
 	{
 		irc_privmsg(bot, where, "Module '%s' loaded.", file);
 	}
