@@ -135,12 +135,17 @@ void handle_self_privmsg(struct irc_conn *bot, char *user, char *text)
 		{
 			for (i = 0; i < privmsg_chan.count; i++)
 			{
-				irc_notice(bot, user, "handler[%i:%i]: %p", i, privmsg_chan.type, privmsg_chan.handlers[i]);
+				irc_notice(bot, user, "handler[%i:%s]: %p", i, privmsg_chan.type, privmsg_chan.handlers[i]);
 			}
 
 			for (i = 0; i < privmsg_self.count; i++)
 			{
-				irc_notice(bot, user, "handler[%i:%i]: %p", i, privmsg_self.type, privmsg_self.handlers[i]);
+				irc_notice(bot, user, "handler[%i:%s]: %p", i, privmsg_self.type, privmsg_self.handlers[i]);
+			}
+
+			for (i = 0; i < irc_connected.count; i++)
+			{
+				irc_notice(bot, user, "handler[%i:%s]: %p", i , irc_connected.type, irc_connected.handlers[i]);
 			}
 		}
 	}
@@ -178,4 +183,5 @@ void free_events()
 	free(privmsg_self.handlers);
 	free(privmsg_chan.handlers);
 	free(chan_join.handlers);
+	free(irc_connected.handlers);
 }

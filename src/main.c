@@ -38,6 +38,7 @@ int main()
 			if (fgets(bot.in, sizeof bot.in, bot.srv_fd) == NULL)
 			{
 				eprint("xbot: remote host closed connection\n");
+				return 0;
 			}
 
 			irc_parse_raw(&bot, bot.in);

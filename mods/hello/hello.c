@@ -13,8 +13,7 @@ void hello(struct irc_conn *bot, char *user, char *chan, char *text)
 
 	if (!strcmp(text, buf))
 	{
-		irc_privmsg(bot, chan, "%i", HANDLER);
-		del_handler(HANDLER, PRIVMSG_CHAN);
+		irc_privmsg(bot, chan, "hi %s", user);
 	}
 
 	free(buf);

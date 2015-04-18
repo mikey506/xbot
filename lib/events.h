@@ -15,6 +15,14 @@ struct handler
 	void **handlers;
 };
 
+struct event
+{
+	char *type;
+	char *user;
+	char *chan;
+	char *text;
+};
+
 void init_events();
 int add_handler(char *type, void *handler);
 void del_handler(int num, char *type);

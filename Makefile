@@ -21,8 +21,9 @@ main:
 	@echo "All Done!"
 
 mods:
-	$(MAKE) -C mods/test
+	$(MAKE) -C mods/hello
 	$(MAKE) -C mods/autojoin
+	$(MAKE) -C mods/uptime
 
 clean:
 	@rm -rf build $(EXEC)
