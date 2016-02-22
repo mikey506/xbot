@@ -59,8 +59,9 @@ void irc_connect(struct irc_conn *bot)
 void irc_auth(struct irc_conn *bot)
 {
 	irc_raw(bot, "NICK %s", bot->nick);
-	irc_raw(bot, "USER %s localhost %s :xbot (v0.1) - developed by @Dark_Aaron", bot->nick, bot->host);
+	irc_raw(bot, "USER %s \" %s :xbot (v0.1) - developed by @Dark_Aaron", bot->nick, bot->host);
 	fflush(bot->srv_fd);
+	setbuf(bot->srv_fd, NULL);
 }
 
 void irc_notice(struct irc_conn *bot, char *to, char *fmt, ...)

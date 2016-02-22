@@ -13,8 +13,6 @@ struct irc_conn
 {
 	FILE *srv_fd;
 
-	
-
 	char nick[32];
 	char *admin;
 	char host[256];
