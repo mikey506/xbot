@@ -5,8 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define HANDLERARRY_LEN 500
+#include <stdarg.h>
 
 #ifdef _WIN32
 #include <ctype.h>
@@ -16,98 +15,133 @@
 #define SPF sprintf
 #endif
 
-struct handler privmsg_self;
-struct handler privmsg_chan;
-struct handler chan_join;
-struct handler irc_connected;
+struct handler *privmsg_self;
+struct handler *privmsg_chan;
+struct handler *chan_join;
+struct handler *irc_connected;
+
+int handlers_count = 0;
+struct handler *handlers[512];
 
 // TODO:
 // redo this module, unified api
 
+void init_event_type(char *type)
+{
+    handlers[handlers_count] = calloc(1, sizeof(struct handler));
+    handlers[handlers_count]->type = type;
+    handlers[handlers_count]->evhands = calloc(128, sizeof(struct ev_handler));
+
+    handlers_count++;
+}
+
 void init_events()
 {
-    privmsg_self.type  = PRIVMSG_SELF;
-    privmsg_chan.type  = PRIVMSG_CHAN;
-    chan_join.type     = JOIN;
-    irc_connected.type = IRC_CONNECTED;
-
-    privmsg_self.count  = 0;
-    privmsg_chan.count  = 0;
-    chan_join.count     = 0;
-    irc_connected.count = 0;
-
-    privmsg_self.handlers  = malloc(sizeof(void *) * HANDLERARRY_LEN);
-    privmsg_chan.handlers  = malloc(sizeof(void *) * HANDLERARRY_LEN);
-    chan_join.handlers     = malloc(sizeof(void *) * HANDLERARRY_LEN);
-    irc_connected.handlers = malloc(sizeof(void *) * HANDLERARRY_LEN);
-
+    init_event_type(PRIVMSG_SELF);
+    init_event_type(PRIVMSG_CHAN);
+    init_event_type(JOIN);
+    init_event_type(IRC_CONNECTED);
 }
 
 MY_API int add_handler(char *type, void *handler)
 {
-	int handler_count;
     printf("Installing handler @ %p [type: %s]\n", handler, type);
 
-    if (!strcmp(PRIVMSG_SELF, type))
+    for (int i = 0; i < handlers_count; i++)
     {
-        privmsg_self.handlers[privmsg_self.count] = handler;
-        privmsg_self.count++;
+        if (!strcmp(handlers[i]->type, type))
+        {
+            if (handlers[i]->count < 128)
+            {
+                handlers[i]->evhands[handlers[i]->count].id = handlers[i]->count;
+                handlers[i]->evhands[handlers[i]->count].handler = handler;
 
-        return privmsg_self.count - 1;
+                handlers[i]->count++;
+                return 0;
+            }
+            else
+            {
+                printf("Handler array is full, cannot add more handlers.\n");
+                return -1;
+            }
+        }
     }
-    else if (!strcmp(PRIVMSG_CHAN, type))
-    {
-        privmsg_chan.handlers[privmsg_chan.count] = handler;
-        privmsg_chan.count++;
-
-        return privmsg_chan.count - 1;
-    }
-    else if (!strcmp(JOIN, type))
-    {
-        chan_join.handlers[chan_join.count] = handler;
-        chan_join.count++;
-
-        return chan_join.count - 1;
-    }
-    else if (!strcmp(IRC_CONNECTED, type))
-    {
-        irc_connected.handlers[irc_connected.count] = handler;
-        irc_connected.count++;
-
-        return irc_connected.count - 1;
-    }
-
-    return -1;
 }
 
 void del_handler(int num, char *type)
 {
-    if (type == PRIVMSG_SELF)
-        privmsg_self.handlers[num] = NULL;
-    else if (type == PRIVMSG_CHAN)
-        privmsg_chan.handlers[num] = NULL;
 }
 
-void handle_connected(struct irc_conn *bot, char *text)
+void fire_handler(struct irc_conn *bot, char *type, ...)
 {
-	int i;
-    void (*handler)();
+    va_list args;
+    va_start(args, type);
 
-    for (i = 0; i < irc_connected.count; i++)
+    for (int i = 0; i < handlers_count; i++)
     {
-        if ((handler = irc_connected.handlers[i]) != NULL)
-            (*handler)(bot, text);
+        if (!strcmp(handlers[i]->type, type))
+        {
+            for (int j = 0; j < handlers[i]->count; j++)
+            {
+                void (*handler)() = handlers[i]->evhands[j].handler;
+
+                if (!strcmp(type, PRIVMSG_SELF))
+                {
+                    char *usr = va_arg(args, char*);
+                    char *text = va_arg(args, char*);
+
+                    handler(bot, usr, text);
+                    va_end(args);
+
+                    return;
+                }
+                else if (!strcmp(type, PRIVMSG_CHAN))
+                {
+                    char *usr = va_arg(args, char*);
+                    char *chan = va_arg(args, char*);
+                    char *text = va_arg(args, char*);
+
+                    handler(bot, usr, chan, text);
+                    va_end(args);
+
+                    return;
+                }
+                else if (!strcmp(type, JOIN))
+                {
+                    char *chan = va_arg(args, char*);
+                    char *usr = va_arg(args, char*);
+
+                    handler(bot, chan, usr);
+
+                    va_end(args);
+                    return;
+                }
+                else if (!strcmp(type, IRC_CONNECTED)) 
+                {
+                    char *text = va_arg(args, char*);
+
+                    handler(bot, text);
+                    va_end(args);
+
+                    return;
+
+                }
+            }
+        }
     }
+    
+    va_end(args);
 }
 
+/*
 void handle_chan_privmsg(struct irc_conn *bot, char *user, char *chan, char *text)
 {
 	int i;
     void (*handler)();
 
-    for (i = 0; i < privmsg_chan.count; i++)
+    for (i = 0; i < privmsg_chan->count; i++)
     {
-        if ((handler = privmsg_chan.handlers[i]) != NULL)
+        if ((handler = privmsg_chan->handlers[i]) != NULL)
             (*handler)(bot, user, chan, text);
     }
 }
@@ -122,9 +156,9 @@ void handle_self_privmsg(struct irc_conn *bot, char *user, char *text)
 
     modpath = (char *)malloc(sizeof(char)*500);
 
-    for (i = 0; i < privmsg_self.count; i++)
+    for (i = 0; i < privmsg_self->count; i++)
     {
-        handler = privmsg_self.handlers[i];
+        handler = privmsg_self->handlers[i];
         ((void(*)())handler)(bot, user, text);
     }
 
@@ -156,19 +190,19 @@ void handle_self_privmsg(struct irc_conn *bot, char *user, char *text)
     {
         if (!strcmp(bot->admin, user))
         {
-            for (i = 0; i < privmsg_chan.count; i++)
+            for (i = 0; i < privmsg_chan->count; i++)
             {
-                irc_notice(bot, user, "handler[%i:%s]: %p", i, privmsg_chan.type, privmsg_chan.handlers[i]);
+                irc_notice(bot, user, "handler[%i:%s]: %p", i, privmsg_chan->type, privmsg_chan->handlers[i]);
             }
 
-            for (i = 0; i < privmsg_self.count; i++)
+            for (i = 0; i < privmsg_self->count; i++)
             {
-                irc_notice(bot, user, "handler[%i:%s]: %p", i, privmsg_self.type, privmsg_self.handlers[i]);
+                irc_notice(bot, user, "handler[%i:%s]: %p", i, privmsg_self->type, privmsg_self->handlers[i]);
             }
 
-            for (i = 0; i < irc_connected.count; i++)
+            for (i = 0; i < irc_connected->count; i++)
             {
-                irc_notice(bot, user, "handler[%i:%s]: %p", i , irc_connected.type, irc_connected.handlers[i]);
+                irc_notice(bot, user, "handler[%i:%s]: %p", i , irc_connected->type, irc_connected->handlers[i]);
             }
         }
     }
@@ -189,22 +223,22 @@ void handle_self_privmsg(struct irc_conn *bot, char *user, char *text)
     free(modpath);
 }
 
+
 void handle_join(struct irc_conn *bot, char *user, char *chan)
 {
 	int i;
     void (*handler)();
 
-    for (i = 0; i < chan_join.count; i++)
+    for (i = 0; i < chan_join->count; i++)
     {
-        handler = chan_join.handlers[i];
+        handler = chan_join->handlers[i];
         ((void(*)())handler)(bot, user, chan);
     }
 }
+*/
+
 
 void free_events()
 {
-    free(privmsg_self.handlers);
-    free(privmsg_chan.handlers);
-    free(chan_join.handlers);
-    free(irc_connected.handlers);
+    //free(handlers);
 }

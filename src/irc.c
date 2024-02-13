@@ -189,16 +189,21 @@ void irc_parse_raw(struct irc_conn *bot, char *raw)
     {
         if (!strcmp(par, bot->nick))
         {
-            handle_self_privmsg(bot, user, text);
+            //handle_self_privmsg(bot, user, text);
+            fire_handler(bot, PRIVMSG_CHAN, user, text);
         }
         else
         {
-            handle_chan_privmsg(bot, user, par, text);
+            //handle_chan_privmsg(bot, user, par, text);
+            //
+
+            fire_handler(bot, PRIVMSG_CHAN, user, par, text);
         }
     }
     else if (!strcmp("JOIN", raw))
     {
-        handle_join(bot, user, par);
+        //handle_join(bot, user, par);
+        fire_handler(bot, JOIN, user, par);
     }
 
     else if (!strcmp("PING", raw))
@@ -207,7 +212,7 @@ void irc_parse_raw(struct irc_conn *bot, char *raw)
     }
     else if (!strcmp("001", raw))
     {
-        handle_connected(bot, text);
+        fire_handler(bot, IRC_CONNECTED, text);
     }
     else
     {

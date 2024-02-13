@@ -10,9 +10,9 @@ struct irc_conn read_config(struct irc_conn bot, char *file)
     int count, n;
     config_t cfg, *cf;
     const config_setting_t *autoload;
-    const char *base = (const char*)malloc(sizeof(char *) * 1024);
+    const char *base = (const char*)malloc(sizeof(char) * 1024);
     const char *mod  = NULL;
-    char *modpath    = (char *)malloc(sizeof(char *) * 500);
+    char *modpath    = (char *)malloc(sizeof(char) * 500);
 
 
     cf = &cfg;

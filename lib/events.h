@@ -13,27 +13,23 @@
 #define IRC_MOTD        "372"
 #define IRC_END_MOTD    "376"
 
+struct ev_handler
+{
+    int id;
+    void *handler;
+};
+
 struct handler
 {
     char *type;
     int count;
-    void **handlers;
+    struct ev_handler *evhands;
 };
 
-struct event
-{
-    char *type;
-    char *user;
-    char *chan;
-    char *text;
-};
 
 void init_events();
 MY_API int add_handler(char *type, void *handler);
 void del_handler(int num, char *type);
-void handle_connected(struct irc_conn *bot, char *text);
-void handle_chan_privmsg(struct irc_conn *bot, char *user, char *chan, char *text);
-void handle_self_privmsg(struct irc_conn *bot, char *user, char *text);
-void handle_join(struct irc_conn *bot, char *user, char *chan);
+void fire_handler(struct irc_conn *bot, char *type, ...);
 
 #endif

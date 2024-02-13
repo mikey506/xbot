@@ -2,13 +2,13 @@
 #define MODULE_H
 
 #include "irc.h"
+#include "events.h"
 
 struct module {
     char *name;
-    //event_handler handlers[50];
+    char file[256];
+    struct ev_handler *handlers;
 };
-
-typedef struct module module;
 
 MY_API void load_module(struct irc_conn *bot, char *where, char *stype, char *file);
 
