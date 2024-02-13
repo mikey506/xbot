@@ -28,3 +28,8 @@ MY_API void mod_init()
 {
 	HANDLER = add_handler(PRIVMSG_CHAN, hello);
 }
+
+MY_API void mod_unload()
+{
+    del_handler(PRIVMSG_CHAN, hello);
+}

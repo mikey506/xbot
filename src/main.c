@@ -33,6 +33,7 @@ int main()
 	int bytesRecv;
 
     init_events();
+    init_mods();
 
     // Read the config
     bot = read_config(bot, "xbot.cfg");
@@ -102,6 +103,12 @@ int main()
 
 				return -1;
 			}
+
+            if (bytesRecv == 0)
+            {
+                eprint("xbot: remote host closed connection\n");
+                return 0;
+            }
 
 			bot.in[bytesRecv] = '\0';
 #else

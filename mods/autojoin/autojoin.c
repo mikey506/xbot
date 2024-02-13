@@ -48,3 +48,8 @@ MY_API void mod_init()
 {
 	add_handler(IRC_CONNECTED, aj);
 }
+
+MY_API void mod_unload()
+{
+    del_handler(IRC_CONNECTED, aj);
+}

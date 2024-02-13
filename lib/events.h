@@ -29,7 +29,7 @@ struct handler
 
 void init_events();
 MY_API int add_handler(char *type, void *handler);
-void del_handler(int num, char *type);
+MY_API void del_handler(char *type, void *handler);
 void fire_handler(struct irc_conn *bot, char *type, ...);
 
 #endif

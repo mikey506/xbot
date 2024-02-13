@@ -28,3 +28,9 @@ MY_API void mod_init()
     printf("installing up handler\n");
 	add_handler(PRIVMSG_CHAN, up);
 }
+
+MY_API void mod_unload()
+{
+    printf("unloading up handler\n");
+    del_handler(PRIVMSG_CHAN, up);
+}

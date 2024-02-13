@@ -23,9 +23,6 @@ struct handler *irc_connected;
 int handlers_count = 0;
 struct handler *handlers[512];
 
-// TODO:
-// redo this module, unified api
-
 void init_event_type(char *type)
 {
     handlers[handlers_count] = calloc(1, sizeof(struct handler));
@@ -73,8 +70,22 @@ MY_API int add_handler(char *type, void *handler)
     }
 }
 
-void del_handler(int num, char *type)
+MY_API void del_handler(char *type, void *handler)
 {
+    int i, j;
+    for (i = 0; i < handlers_count; i++)
+    {
+        if (!strcmp(handlers[i]->type, type))
+        {
+            for (j = 0; j < handlers[i]->count; j++)
+            {
+                if (handlers[i]->evhands[j].handler == handler)
+                {
+                    handlers[i]->evhands[j].handler = NULL;
+                }
+            }
+        }
+    }
 }
 
 void fire_handler(struct irc_conn *bot, char *type, ...)
@@ -90,14 +101,12 @@ void fire_handler(struct irc_conn *bot, char *type, ...)
     {
         if (!strcmp(handlers[i]->type, type))
         {
-            printf("handlers[%d]->count: %d\n", i, handlers[i]->count);
-            printf("type: %s\n", type);
-
             for (j = 0; j < handlers[i]->count; j++)
             {
-                printf("j: %d i: %d\n", j, i);
-
                 handler = handlers[i]->evhands[j].handler;
+
+                if (handler == NULL)
+                    continue;
 
                 if (!strcmp(type, PRIVMSG_SELF))
                 {
