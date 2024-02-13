@@ -13,50 +13,52 @@
 
 void eprint(char *fmt, ...)
 {
-	char bufout[4096];
-	va_list ap;
+    char bufout[4096];
+    va_list ap;
 
-	va_start(ap, fmt);
-	vsnprintf(bufout, sizeof bufout, fmt, ap);
-	va_end(ap);
+    va_start(ap, fmt);
+    vsnprintf(bufout, sizeof bufout, fmt, ap);
+    va_end(ap);
 
-	fprintf(stderr, "%s", bufout);
-	if (fmt[0] && fmt[strlen(fmt) - 1] == ':')
-	{
-		fprintf(stderr, "%s\n", strerror(errno));
-	}
+    fprintf(stderr, "%s", bufout);
+    if (fmt[0] && fmt[strlen(fmt) - 1] == ':')
+    {
+        fprintf(stderr, "%s\n", strerror(errno));
+    }
 }
 
+#if defined(__GLIBC__) && (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 38)) || defined(_WIN32)
 void strlcpy(char *to, const char *from, int len)
 {
-	memccpy(to, from, '\0', len);
-	to[len-1] = '\0';
+    memccpy(to, from, '\0', len);
+    to[len-1] = '\0';
 }
+#endif
 
 char *skip(char *s, char c)
 {
-	while (*s != c && *s != '\0')
-	{
-		s++;
-	}
+    while (*s != c && *s != '\0')
+    {
+        s++;
+    }
 
-	if (*s != '\0')
-	{
-		*s++ = '\0';
-	}
+    if (*s != '\0')
+    {
+        *s++ = '\0';
+    }
 
-	return s;
+    return s;
 }
 
 void trim(char *s)
 {
-	char *e;
+    char *e;
 
-	e = s + strlen(s) - 1;
-	while (isspace(*e) && e > s)
-	{
-		e--;
-	}
+    e = s + strlen(s) - 1;
+    while (isspace(*e) && e > s)
+    {
+        e--;
+    }
 
-	*(e + 1) = '\0';
+    *(e + 1) = '\0';
 }

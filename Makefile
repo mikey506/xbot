@@ -6,7 +6,10 @@ OBJ=./build
 OBJECTS=$(OBJ)/*.o
 EXEC=xbot
 
-.PHONY: mods
+#MODS_DIR := $(filter-out $(wildcard mods/*.so), $(wildcard mods/*))
+MODS_DIR := $(filter-out $(wildcard mods/*.so) $(wildcard mods/*.dll) $(wildcard mods/*.bat) $(wildcard mods/*.obj) $(wildcard mods/*.lib) $(wildcard mods/*.exp), $(wildcard mods/*))
+
+.PHONY: mods $(MODS_DIR)
 
 main:
 	@rm -rf build
@@ -20,10 +23,11 @@ main:
 	$(CC) -o $(EXEC) $(OBJECTS) $(BINFLAGS)
 	@echo "All Done!"
 
-mods:
-	$(MAKE) -C mods/hello
-	$(MAKE) -C mods/autojoin
-	$(MAKE) -C mods/uptime
+mods: $(MODS_DIR)
+
+$(MODS_DIR):
+	$(MAKE) -C $@
 
 clean:
 	@rm -rf build $(EXEC)
+	@rm -rf mods/*.so

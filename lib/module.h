@@ -3,6 +3,14 @@
 
 #include "irc.h"
 
-void load_module(struct irc_conn *bot, char *where, char *stype, char *file);
+struct module {
+    char *name;
+    //event_handler handlers[50];
+};
+
+typedef struct module module;
+
+MY_API void load_module(struct irc_conn *bot, char *where, char *stype, char *file);
+
 
 #endif

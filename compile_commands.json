@@ -1,0 +1,92 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-g",
+      "-std=gnu99",
+      "-c",
+      "-I./lib",
+      "-o",
+      "./build/config.o",
+      "./src/config.c"
+    ],
+    "directory": "/home/aaron/projects/xbot",
+    "file": "/home/aaron/projects/xbot/src/config.c",
+    "output": "/home/aaron/projects/xbot/build/config.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-g",
+      "-std=gnu99",
+      "-c",
+      "-I./lib",
+      "-o",
+      "./build/main.o",
+      "./src/main.c"
+    ],
+    "directory": "/home/aaron/projects/xbot",
+    "file": "/home/aaron/projects/xbot/src/main.c",
+    "output": "/home/aaron/projects/xbot/build/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-g",
+      "-std=gnu99",
+      "-c",
+      "-I./lib",
+      "-o",
+      "./build/irc.o",
+      "./src/irc.c"
+    ],
+    "directory": "/home/aaron/projects/xbot",
+    "file": "/home/aaron/projects/xbot/src/irc.c",
+    "output": "/home/aaron/projects/xbot/build/irc.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-g",
+      "-std=gnu99",
+      "-c",
+      "-I./lib",
+      "-o",
+      "./build/util.o",
+      "./src/util.c"
+    ],
+    "directory": "/home/aaron/projects/xbot",
+    "file": "/home/aaron/projects/xbot/src/util.c",
+    "output": "/home/aaron/projects/xbot/build/util.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-g",
+      "-std=gnu99",
+      "-c",
+      "-I./lib",
+      "-o",
+      "./build/events.o",
+      "./src/events.c"
+    ],
+    "directory": "/home/aaron/projects/xbot",
+    "file": "/home/aaron/projects/xbot/src/events.c",
+    "output": "/home/aaron/projects/xbot/build/events.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-g",
+      "-std=gnu99",
+      "-c",
+      "-I./lib",
+      "-o",
+      "./build/module.o",
+      "./src/module.c"
+    ],
+    "directory": "/home/aaron/projects/xbot",
+    "file": "/home/aaron/projects/xbot/src/module.c",
+    "output": "/home/aaron/projects/xbot/build/module.o"
+  }
+]

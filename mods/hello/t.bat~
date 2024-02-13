@@ -1,0 +1,2 @@
+cl /I..\..\lib /LD /EHsc  ..\..\include\xbot.lib hello.c 
+link /DLL /out:..\hello.dll hello.obj ..\..\include\xbot.lib 

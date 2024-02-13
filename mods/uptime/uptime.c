@@ -3,11 +3,16 @@
 #include "module.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-void up(struct irc_conn *bot, char *user, char *chan, char *text)
+const char *trigger;
+
+void up(struct irc_conn *bot, char *user, char *chan, const char *text)
 {
 	char buf[100];
 	FILE* file;
+
+	printf("dbug: %s\n", text);
 
 	if (!strcmp(text, "!uptime"))
 	{

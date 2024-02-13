@@ -1,10 +1,12 @@
+#define MY_DLL_EXPORTS 1
+
 #include "irc.h"
 #include "events.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <libconfig.h>
 
-void aj(struct irc_conn *bot, char *text)
+MY_API void aj(struct irc_conn *bot, char *text)
 {
 
 	// TODO: 
@@ -42,7 +44,7 @@ void aj(struct irc_conn *bot, char *text)
 	config_destroy(cf);
 }
 
-void mod_init()
+MY_API void mod_init()
 {
 	add_handler(IRC_CONNECTED, aj);
 }
