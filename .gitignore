@@ -4,7 +4,8 @@ Debug
 _UpgradeReport_Files
 Release
 mods/test
-
+.cache
+UpgradeLog*.XML
 
 *.so
 *.dll
