@@ -146,6 +146,7 @@ void irc_raw(struct irc_conn *bot, char *fmt, ...)
     va_end(ap);
 
 #ifdef _WIN32
+	sprintf(outbuf, "%s\r\n", bot->out);
 	send(bot->srv_fd, outbuf, strlen(outbuf), 0);
 #else
     fprintf(bot->srv_fd, "%s\r\n", bot->out);

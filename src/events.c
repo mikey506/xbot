@@ -30,6 +30,7 @@ void init_event_type(char *type)
 {
     handlers[handlers_count] = calloc(1, sizeof(struct handler));
     handlers[handlers_count]->type = type;
+    handlers[handlers_count]->count = 0;
     handlers[handlers_count]->evhands = calloc(128, sizeof(struct ev_handler));
 
     handlers_count++;
@@ -45,10 +46,12 @@ void init_events()
 
 MY_API int add_handler(char *type, void *handler)
 {
+    int i;
     printf("Installing handler @ %p [type: %s]\n", handler, type);
 
-    for (int i = 0; i < handlers_count; i++)
+    for (i = 0; i < handlers_count; i++)
     {
+        printf("comparing %s to %s\n", handlers[i]->type, type);
         if (!strcmp(handlers[i]->type, type))
         {
             if (handlers[i]->count < 128)
@@ -57,7 +60,9 @@ MY_API int add_handler(char *type, void *handler)
                 handlers[i]->evhands[handlers[i]->count].handler = handler;
 
                 handlers[i]->count++;
-                return 0;
+
+                printf("type %s count: %d\n", type, handlers[i]->count);
+                return handlers[i]->count - 1;
             }
             else
             {
@@ -75,62 +80,70 @@ void del_handler(int num, char *type)
 void fire_handler(struct irc_conn *bot, char *type, ...)
 {
     va_list args;
-    va_start(args, type);
+    char *usr = calloc(1, 64);
+    char *chan = calloc(1, 64);
+    char *text = calloc(1, 512);
+    int i, j;
+    void (*handler)();
 
-    for (int i = 0; i < handlers_count; i++)
+    for (i = 0; i < handlers_count; i++)
     {
         if (!strcmp(handlers[i]->type, type))
         {
-            for (int j = 0; j < handlers[i]->count; j++)
+            printf("handlers[%d]->count: %d\n", i, handlers[i]->count);
+            printf("type: %s\n", type);
+
+            for (j = 0; j < handlers[i]->count; j++)
             {
-                void (*handler)() = handlers[i]->evhands[j].handler;
+                printf("j: %d i: %d\n", j, i);
+
+                handler = handlers[i]->evhands[j].handler;
 
                 if (!strcmp(type, PRIVMSG_SELF))
                 {
-                    char *usr = va_arg(args, char*);
-                    char *text = va_arg(args, char*);
+                    va_start(args, type);
+                 
+                    usr = va_arg(args, char*);
+                    text = va_arg(args, char*);
 
-                    handler(bot, usr, text);
+                    (*handler)(bot, usr, text);
                     va_end(args);
-
-                    return;
                 }
                 else if (!strcmp(type, PRIVMSG_CHAN))
                 {
-                    char *usr = va_arg(args, char*);
-                    char *chan = va_arg(args, char*);
-                    char *text = va_arg(args, char*);
+                    va_start(args, type);
 
-                    handler(bot, usr, chan, text);
+                    usr = va_arg(args, char*);
+                    chan = va_arg(args, char*);
+                    text = va_arg(args, char*);
+
+                    (*handler)(bot, usr, chan, text);
                     va_end(args);
-
-                    return;
                 }
                 else if (!strcmp(type, JOIN))
                 {
-                    char *chan = va_arg(args, char*);
-                    char *usr = va_arg(args, char*);
+                    va_start(args, type);
 
-                    handler(bot, chan, usr);
+                    chan = va_arg(args, char*);
+                    usr = va_arg(args, char*);
+
+                    (*handler)(bot, chan, usr);
 
                     va_end(args);
-                    return;
                 }
                 else if (!strcmp(type, IRC_CONNECTED)) 
                 {
-                    char *text = va_arg(args, char*);
+                    va_start(args, type);
 
-                    handler(bot, text);
+                    text = va_arg(args, char*);
+
+                    (*handler)(bot, text);
                     va_end(args);
-
-                    return;
-
                 }
             }
         }
     }
     
-    va_end(args);
 }
 
 /*

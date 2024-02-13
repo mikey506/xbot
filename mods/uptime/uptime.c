@@ -5,14 +5,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char *trigger;
-
-void up(struct irc_conn *bot, char *user, char *chan, const char *text)
+MY_API void up(struct irc_conn *bot, char *user, char *chan, const char *text)
 {
 	char buf[100];
 	FILE* file;
 
-	printf("dbug: %s\n", text);
+	printf("dbug up called: %s\n", text);
 
 	if (!strcmp(text, "!uptime"))
 	{
@@ -25,7 +23,8 @@ void up(struct irc_conn *bot, char *user, char *chan, const char *text)
 
 }
 
-void mod_init()
+MY_API void mod_init()
 {
+    printf("installing up handler\n");
 	add_handler(PRIVMSG_CHAN, up);
 }
