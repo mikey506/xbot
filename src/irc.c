@@ -191,7 +191,7 @@ void irc_parse_raw(struct irc_conn *bot, char *raw)
         if (!strcmp(par, bot->nick))
         {
             //handle_self_privmsg(bot, user, text);
-            fire_handler(bot, PRIVMSG_CHAN, user, text);
+            fire_handler(bot, PRIVMSG_SELF, user, text);
         }
         else
         {

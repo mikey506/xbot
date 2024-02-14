@@ -5,7 +5,6 @@
 
 #define PRIVMSG_SELF    "CMSG"
 #define PRIVMSG_CHAN    "PMSG"
-#define PRIVMSG_USER    "UMSG"
 #define JOIN            "JOIN"
 #define PART            "PART"
 #define QUIT            "QUIT"

@@ -96,7 +96,91 @@ void fire_handler(struct irc_conn *bot, char *type, ...)
     char *text = calloc(1, 512);
     int i, j;
     void (*handler)();
+    char *cmd, *arg, *modpath;
 
+    modpath = (char *)malloc(sizeof(char)*500);
+
+    printf("Firing handler for type: %s\n", type);
+
+    if (!strcmp(type, PRIVMSG_SELF))
+    {
+        printf("Firing PRIVMSG_SELF handler\n");
+        va_start(args, type);
+     
+        usr = va_arg(args, char*);
+        text = va_arg(args, char*);
+
+        cmd = text;
+        arg = skip(cmd, ' ');
+
+        printf("cmd: %s\n", cmd);
+        printf("arg: %s\n", arg);
+
+        if (!strcmp("JOIN", cmd))
+        {
+            printf("dbug: cmp (%s :  %s)\n", (char*)bot->admin, usr);
+
+            if (!strcmp(bot->admin, usr))
+            {
+                irc_raw(bot, "JOIN :%s", arg);
+            }
+            else
+            {
+                irc_notice(bot, usr, "You are unauthorized to use this command.");
+            }
+        }
+        else if (!strcmp("PART", cmd))
+        {
+            if (!strcmp(bot->admin, usr))
+            {
+                irc_raw(bot, "PART %s :Admin made me leave.", arg);
+            }
+            else
+            {
+                irc_notice(bot, usr, "You are unauthorized to use this command.");
+            }
+        }
+        /*
+        else if (!strcmp("PRINT_HANDLERS", cmd))
+        {
+            if (!strcmp(bot->admin, usr))
+            {
+                for (i = 0; i < privmsg_chan->count; i++)
+                {
+                    irc_notice(bot, usr, "handler[%i:%s]: %p", i, privmsg_chan->type, privmsg_chan->handlers[i]);
+                }
+
+                for (i = 0; i < privmsg_self->count; i++)
+                {
+                    irc_notice(bot, usr, "handler[%i:%s]: %p", i, privmsg_self->type, privmsg_self->handlers[i]);
+                }
+
+                for (i = 0; i < irc_connected->count; i++)
+                {
+                    irc_notice(bot, usr, "handler[%i:%s]: %p", i , irc_connected->type, irc_connected->handlers[i]);
+                }
+            }
+        }
+        */
+        else if (!strcmp("LOADMOD", cmd))
+        {
+            if (!strcmp(bot->admin, usr))
+            {
+                irc_notice(bot, usr, "Loading module: mods/%s.so", arg);
+#ifdef _WIN32
+                SPF(modpath, "./mods/%s.dll", arg);
+#else
+                SPF(modpath, "./mods/%s.so", arg);
+#endif
+                load_module(bot, usr, PRIVMSG_SELF, modpath);
+            }
+            else
+            {
+                irc_notice(bot, usr, "You are unauthorized to use this command.");
+            }
+        }
+    }
+    
     for (i = 0; i < handlers_count; i++)
     {
         if (!strcmp(handlers[i]->type, type))
@@ -153,112 +237,8 @@ void fire_handler(struct irc_conn *bot, char *type, ...)
         }
     }
     
-}
-
-/*
-void handle_chan_privmsg(struct irc_conn *bot, char *user, char *chan, char *text)
-{
-	int i;
-    void (*handler)();
-
-    for (i = 0; i < privmsg_chan->count; i++)
-    {
-        if ((handler = privmsg_chan->handlers[i]) != NULL)
-            (*handler)(bot, user, chan, text);
-    }
-}
-
-void handle_self_privmsg(struct irc_conn *bot, char *user, char *text)
-{
-    void (*handler)();
-    int i;
-    char *cmd, *arg, *modpath;
-    cmd = text;
-    arg = skip(cmd, ' ');
-
-    modpath = (char *)malloc(sizeof(char)*500);
-
-    for (i = 0; i < privmsg_self->count; i++)
-    {
-        handler = privmsg_self->handlers[i];
-        ((void(*)())handler)(bot, user, text);
-    }
-
-    if (!strcmp("JOIN", cmd))
-    {
-        printf("dbug: cmp (%s :  %s)\n", (char*)bot->admin, user);
-
-        if (!strcmp(bot->admin, user))
-        {
-            irc_raw(bot, "JOIN :%s", arg);
-        }
-        else
-        {
-            irc_notice(bot, user, "You are unauthorized to use this command.");
-        }
-    }
-    else if (!strcmp("PART", cmd))
-    {
-        if (!strcmp(bot->admin, user))
-        {
-            irc_raw(bot, "PART %s :Admin made me leave.", arg);
-        }
-        else
-        {
-            irc_notice(bot, user, "You are unauthorized to use this command.");
-        }
-    }
-    else if (!strcmp("PRINT_HANDLERS", cmd))
-    {
-        if (!strcmp(bot->admin, user))
-        {
-            for (i = 0; i < privmsg_chan->count; i++)
-            {
-                irc_notice(bot, user, "handler[%i:%s]: %p", i, privmsg_chan->type, privmsg_chan->handlers[i]);
-            }
-
-            for (i = 0; i < privmsg_self->count; i++)
-            {
-                irc_notice(bot, user, "handler[%i:%s]: %p", i, privmsg_self->type, privmsg_self->handlers[i]);
-            }
-
-            for (i = 0; i < irc_connected->count; i++)
-            {
-                irc_notice(bot, user, "handler[%i:%s]: %p", i , irc_connected->type, irc_connected->handlers[i]);
-            }
-        }
-    }
-    else if (!strcmp("LOADMOD", cmd))
-    {
-        if (!strcmp(bot->admin, user))
-        {
-            irc_notice(bot, user, "Loading module: mods/%s.so", arg);
-            SPF(modpath, "./mods/%s.so", arg);
-			load_module(bot, user, PRIVMSG_SELF, modpath);
-        }
-        else
-        {
-            irc_notice(bot, user, "You are unauthorized to use this command.");
-        }
-    }
-
     free(modpath);
 }
-
-
-void handle_join(struct irc_conn *bot, char *user, char *chan)
-{
-	int i;
-    void (*handler)();
-
-    for (i = 0; i < chan_join->count; i++)
-    {
-        handler = chan_join->handlers[i];
-        ((void(*)())handler)(bot, user, chan);
-    }
-}
-*/
-
 
 void free_events()
 {
