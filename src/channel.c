@@ -401,3 +401,30 @@ MY_API bool user_exists(char *chan, char *nick)
     return 0;
 }
 
+#ifdef _WIN32
+MY_API BOOL is_on_channel(char *nick, char *chan)
+#else 
+MY_API bool is_on_channel(char *nick, char *chan)
+#endif
+{
+    int i;
+
+    for (i = 0; i < chan_count; i++)
+    {
+        if (!strcmp(channels[i]->name, chan))
+        {
+            int j;
+
+            for (j = 0; j < channels[i]->user_count; j++)
+            {
+                if (!strcmp(channels[i]->users[j].nick, nick))
+                {
+                    return 1;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+

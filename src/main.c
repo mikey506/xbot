@@ -121,6 +121,8 @@ int main()
 
             while (1)
             {
+                // remove \r
+                p = strchr(bot.in, '\r');
                 p = strchr(bot.in, '\n');
                 if (p == NULL)
                     break;
