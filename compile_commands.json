@@ -10,9 +10,9 @@
       "./build/config.o",
       "./src/config.c"
     ],
-    "directory": "/home/aaron/projects/xbot",
-    "file": "/home/aaron/projects/xbot/src/config.c",
-    "output": "/home/aaron/projects/xbot/build/config.o"
+    "directory": "/mnt/mem/Dev/xbot",
+    "file": "/mnt/mem/Dev/xbot/src/config.c",
+    "output": "/mnt/mem/Dev/xbot/build/config.o"
   },
   {
     "arguments": [
@@ -25,9 +25,9 @@
       "./build/main.o",
       "./src/main.c"
     ],
-    "directory": "/home/aaron/projects/xbot",
-    "file": "/home/aaron/projects/xbot/src/main.c",
-    "output": "/home/aaron/projects/xbot/build/main.o"
+    "directory": "/mnt/mem/Dev/xbot",
+    "file": "/mnt/mem/Dev/xbot/src/main.c",
+    "output": "/mnt/mem/Dev/xbot/build/main.o"
   },
   {
     "arguments": [
@@ -40,9 +40,9 @@
       "./build/irc.o",
       "./src/irc.c"
     ],
-    "directory": "/home/aaron/projects/xbot",
-    "file": "/home/aaron/projects/xbot/src/irc.c",
-    "output": "/home/aaron/projects/xbot/build/irc.o"
+    "directory": "/mnt/mem/Dev/xbot",
+    "file": "/mnt/mem/Dev/xbot/src/irc.c",
+    "output": "/mnt/mem/Dev/xbot/build/irc.o"
   },
   {
     "arguments": [
@@ -55,9 +55,9 @@
       "./build/util.o",
       "./src/util.c"
     ],
-    "directory": "/home/aaron/projects/xbot",
-    "file": "/home/aaron/projects/xbot/src/util.c",
-    "output": "/home/aaron/projects/xbot/build/util.o"
+    "directory": "/mnt/mem/Dev/xbot",
+    "file": "/mnt/mem/Dev/xbot/src/util.c",
+    "output": "/mnt/mem/Dev/xbot/build/util.o"
   },
   {
     "arguments": [
@@ -70,9 +70,9 @@
       "./build/events.o",
       "./src/events.c"
     ],
-    "directory": "/home/aaron/projects/xbot",
-    "file": "/home/aaron/projects/xbot/src/events.c",
-    "output": "/home/aaron/projects/xbot/build/events.o"
+    "directory": "/mnt/mem/Dev/xbot",
+    "file": "/mnt/mem/Dev/xbot/src/events.c",
+    "output": "/mnt/mem/Dev/xbot/build/events.o"
   },
   {
     "arguments": [
@@ -85,8 +85,23 @@
       "./build/module.o",
       "./src/module.c"
     ],
-    "directory": "/home/aaron/projects/xbot",
-    "file": "/home/aaron/projects/xbot/src/module.c",
-    "output": "/home/aaron/projects/xbot/build/module.o"
+    "directory": "/mnt/mem/Dev/xbot",
+    "file": "/mnt/mem/Dev/xbot/src/module.c",
+    "output": "/mnt/mem/Dev/xbot/build/module.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-g",
+      "-std=gnu99",
+      "-c",
+      "-I./lib",
+      "-o",
+      "./build/channel.o",
+      "./src/channel.c"
+    ],
+    "directory": "/mnt/mem/Dev/xbot",
+    "file": "/mnt/mem/Dev/xbot/src/channel.c",
+    "output": "/mnt/mem/Dev/xbot/build/channel.o"
   }
 ]

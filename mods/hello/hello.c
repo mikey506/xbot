@@ -9,7 +9,7 @@
 
 int HANDLER = 0;
 
-MY_API void hello(struct irc_conn *bot, char *user, char *chan, const char *text)
+MY_API void hello(struct irc_conn *bot, char *user, char *host, char *chan, const char *text)
 {
 	char *buf = (char *)malloc(sizeof(char *) * 500);
 	sprintf(buf, "hi %s", bot->nick);

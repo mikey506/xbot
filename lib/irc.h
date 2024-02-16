@@ -23,7 +23,7 @@ struct irc_conn
 #endif
 
     char nick[32];
-    char *admin;
+    char admin[64];
     char host[256];
     char port[5];
     char real_name[512];
@@ -45,11 +45,16 @@ typedef struct handler event_handler;
 #define MY_API
 #endif
 
-MY_API void irc_connect(struct irc_conn *bot);
-MY_API void irc_auth(struct irc_conn *bot);
+void irc_connect(struct irc_conn *bot);
+void irc_auth(struct irc_conn *bot);
+
 MY_API void irc_notice(struct irc_conn *bot, char *to, char *fmt, ...);
 MY_API void irc_privmsg(struct irc_conn *bot, char *to, char *fmt, ...);
 MY_API void irc_raw(struct irc_conn *bot, char *fmt, ...);
-MY_API void irc_parse_raw(struct irc_conn *bot, char *raw);
+MY_API void irc_join(struct irc_conn *bot, char *channel);
+MY_API void irc_part(struct irc_conn *bot, char *channel, char *reason);
+
+
+void irc_parse_raw(struct irc_conn *bot, char *raw);
 
 #endif

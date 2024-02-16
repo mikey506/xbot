@@ -103,6 +103,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="lib\channel.h" />
     <ClInclude Include="lib\config.h" />
     <ClInclude Include="lib\events.h" />
     <ClInclude Include="lib\irc.h" />
@@ -110,6 +111,7 @@
     <ClInclude Include="lib\util.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\channel.c" />
     <ClCompile Include="src\config.c" />
     <ClCompile Include="src\events.c" />
     <ClCompile Include="src\irc.c" />

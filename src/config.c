@@ -39,7 +39,7 @@ struct irc_conn read_config(struct irc_conn bot, char *file)
         strlcpy(bot.port, base, sizeof bot.port);
 
     if (config_lookup_string(cf, "bot.admin", &base))
-        bot.admin = (char *)base;
+        strlcpy(bot.admin, base, sizeof bot.admin);
 
     autoload = config_lookup(cf, "mods.autoload");
     count    = config_setting_length(autoload);

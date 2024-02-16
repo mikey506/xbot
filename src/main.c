@@ -13,6 +13,8 @@
 #include "irc.h"
 #include "util.h"
 #include "events.h"
+#include "module.h"
+#include "channel.h"
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -29,6 +31,8 @@ int main()
     fd_set rd;
     struct irc_conn bot;
     struct timeval tv;
+
+    char *p;
 
 	int bytesRecv;
 
@@ -78,8 +82,6 @@ int main()
             return -1;
         }
 #endif
-
-
         else if (n == 0)
         {
             if (time(NULL) - trespond >= 300)
@@ -111,6 +113,22 @@ int main()
             }
 
 			bot.in[bytesRecv] = '\0';
+
+			printf("recv: %s\r\n", bot.in);
+
+            // split bot.in into lines by \r\n and parse each one
+
+
+            while (1)
+            {
+                p = strchr(bot.in, '\n');
+                if (p == NULL)
+                    break;
+
+                *p = '\0';
+                irc_parse_raw(&bot, bot.in);
+                memmove(bot.in, p + 1, strlen(p + 1) + 1);
+            }
 #else
 		if (FD_ISSET(fileno(bot.srv_fd), &rd))
 		{
@@ -119,9 +137,10 @@ int main()
                 eprint("xbot: remote host closed connection\n");
                 return 0;
             }
-#endif
+
 			printf("recv: %s\r\n", bot.in);
             irc_parse_raw(&bot, bot.in);
+#endif
             trespond = time(NULL);
         }
     }

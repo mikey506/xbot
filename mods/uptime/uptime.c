@@ -5,12 +5,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-MY_API void up(struct irc_conn *bot, char *user, char *chan, const char *text)
+MY_API void up(struct irc_conn *bot, char *user, char *host, char *chan, char *text)
 {
 	char buf[100];
 	FILE* file;
 
-	printf("dbug up called: %s\n", text);
+	printf("dbug up called: %s!%s %s\n", user, host, text);
 
 	if (!strcmp(text, "!uptime"))
 	{

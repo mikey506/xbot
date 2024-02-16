@@ -38,7 +38,7 @@ MY_API void aj(struct irc_conn *bot, char *text)
 	for (n = 0; n < count; n++)
 	{
 		chan = config_setting_get_string_elem(autojoin, n);
-		irc_raw(bot, "JOIN :%s", chan);
+		irc_join(bot, chan);
 	}
 
 	config_destroy(cf);

@@ -8,7 +8,8 @@
 #define UTIL_H
 
 #ifdef _WIN32
-#define USE_MY_STRLCPY 1
+#define true TRUE
+#define false FALSE
 #endif
 
 void eprint(char *fmt, ...);

@@ -6,11 +6,18 @@
 #define PRIVMSG_SELF    "CMSG"
 #define PRIVMSG_CHAN    "PMSG"
 #define JOIN            "JOIN"
+#define JOIN_MYSELF     "JOIN_MYSELF"
 #define PART            "PART"
+#define PART_MYSELF     "PART_MYSELF"
 #define QUIT            "QUIT"
+#define NICK            "NICK"
+#define NICK_MYSELF     "NICK_MYSELF"
+#define NICK_INUSE      "433"
+#define CTCP            "CTCP"
 #define IRC_CONNECTED   "001"
 #define IRC_MOTD        "372"
 #define IRC_END_MOTD    "376"
+#define IRC_NAMREPLY    "353"
 
 struct ev_handler
 {

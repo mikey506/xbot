@@ -38,7 +38,12 @@ void init_events()
     init_event_type(PRIVMSG_SELF);
     init_event_type(PRIVMSG_CHAN);
     init_event_type(JOIN);
+    init_event_type(JOIN_MYSELF);
     init_event_type(IRC_CONNECTED);
+    init_event_type(NICK_MYSELF);
+    init_event_type(NICK_INUSE);
+    init_event_type(CTCP);
+    init_event_type(IRC_NAMREPLY);
 }
 
 MY_API int add_handler(char *type, void *handler)
@@ -92,6 +97,7 @@ void fire_handler(struct irc_conn *bot, char *type, ...)
 {
     va_list args;
     char *usr = calloc(1, 64);
+    char *host = calloc(1, 512);
     char *chan = calloc(1, 64);
     char *text = calloc(1, 512);
     int i, j;
@@ -100,26 +106,19 @@ void fire_handler(struct irc_conn *bot, char *type, ...)
 
     modpath = (char *)malloc(sizeof(char)*500);
 
-    printf("Firing handler for type: %s\n", type);
-
     if (!strcmp(type, PRIVMSG_SELF))
     {
-        printf("Firing PRIVMSG_SELF handler\n");
         va_start(args, type);
      
         usr = va_arg(args, char*);
+        host = va_arg(args, char*);
         text = va_arg(args, char*);
 
         cmd = text;
         arg = skip(cmd, ' ');
 
-        printf("cmd: %s\n", cmd);
-        printf("arg: %s\n", arg);
-
         if (!strcmp("JOIN", cmd))
         {
-            printf("dbug: cmp (%s :  %s)\n", (char*)bot->admin, usr);
-
             if (!strcmp(bot->admin, usr))
             {
                 irc_raw(bot, "JOIN :%s", arg);
@@ -140,28 +139,24 @@ void fire_handler(struct irc_conn *bot, char *type, ...)
                 irc_notice(bot, usr, "You are unauthorized to use this command.");
             }
         }
-        /*
         else if (!strcmp("PRINT_HANDLERS", cmd))
         {
             if (!strcmp(bot->admin, usr))
             {
-                for (i = 0; i < privmsg_chan->count; i++)
+                for (i = 0; i < handlers_count; i++)
                 {
-                    irc_notice(bot, usr, "handler[%i:%s]: %p", i, privmsg_chan->type, privmsg_chan->handlers[i]);
-                }
-
-                for (i = 0; i < privmsg_self->count; i++)
-                {
-                    irc_notice(bot, usr, "handler[%i:%s]: %p", i, privmsg_self->type, privmsg_self->handlers[i]);
-                }
-
-                for (i = 0; i < irc_connected->count; i++)
-                {
-                    irc_notice(bot, usr, "handler[%i:%s]: %p", i , irc_connected->type, irc_connected->handlers[i]);
+                    irc_notice(bot, usr, "Handler type: %s\n", handlers[i]->type);
+                    for (j = 0; j < handlers[i]->count; j++)
+                    {
+                        irc_notice(bot, usr, "Handler %d: %p\n", j, handlers[i]->evhands[j].handler);
+                    }
                 }
             }
+            else
+            {
+                irc_notice(bot, usr, "You are unauthorized to use this command.");
+            }
         }
-        */
         else if (!strcmp("LOADMOD", cmd))
         {
             if (!strcmp(bot->admin, usr))
@@ -197,9 +192,10 @@ void fire_handler(struct irc_conn *bot, char *type, ...)
                     va_start(args, type);
                  
                     usr = va_arg(args, char*);
+                    host = va_arg(args, char*);
                     text = va_arg(args, char*);
 
-                    (*handler)(bot, usr, text);
+                    (*handler)(bot, usr, host, text);
                     va_end(args);
                 }
                 else if (!strcmp(type, PRIVMSG_CHAN))
@@ -207,10 +203,11 @@ void fire_handler(struct irc_conn *bot, char *type, ...)
                     va_start(args, type);
 
                     usr = va_arg(args, char*);
+                    host = va_arg(args, char*);
                     chan = va_arg(args, char*);
                     text = va_arg(args, char*);
 
-                    (*handler)(bot, usr, chan, text);
+                    (*handler)(bot, usr, host, chan, text);
                     va_end(args);
                 }
                 else if (!strcmp(type, JOIN))
@@ -219,9 +216,9 @@ void fire_handler(struct irc_conn *bot, char *type, ...)
 
                     chan = va_arg(args, char*);
                     usr = va_arg(args, char*);
+                    host = va_arg(args, char*);
 
-                    (*handler)(bot, chan, usr);
-
+                    (*handler)(bot, chan, usr, host);
                     va_end(args);
                 }
                 else if (!strcmp(type, IRC_CONNECTED)) 

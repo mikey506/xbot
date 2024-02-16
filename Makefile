@@ -20,6 +20,7 @@ main:
 	$(CC) $(CFLAGS) $(SRC)/util.c   -o $(OBJ)/util.o
 	$(CC) $(CFLAGS) $(SRC)/events.c -o $(OBJ)/events.o
 	$(CC) $(CFLAGS) $(SRC)/module.c -o $(OBJ)/module.o
+	$(CC) $(CFLAGS) $(SRC)/channel.c -o $(OBJ)/channel.o
 	$(CC) -o $(EXEC) $(OBJECTS) $(BINFLAGS)
 	@echo "All Done!"
 
