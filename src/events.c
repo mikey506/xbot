@@ -44,6 +44,7 @@ void init_events()
     init_event_type(NICK_INUSE);
     init_event_type(CTCP);
     init_event_type(IRC_NAMREPLY);
+    init_event_type(IRC_WHOREPLY);
 }
 
 MY_API int add_handler(char *type, void *handler)

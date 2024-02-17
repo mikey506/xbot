@@ -17,12 +17,16 @@
 #define CHAN_PRIV_OWNER "~"
 #define CHAN_PRIV_ADMIN "&"
 
+// debug 352: chan: #bbsn, user: ~shadow, host: services.ephasic.org, server: memphis.ephasic.org, nick: Shadow, flags: H*, realname: shadow
+
 struct user
 {
     char nick[50];
+    char user[50];
     char host[256];
     char real_name[512];
-    
+    char server[256];
+
 #ifdef _WIN32
     BOOL is_op;
     BOOL is_halfop;
@@ -52,6 +56,9 @@ void add_user_to_channel(char *user, char *host, char *chan);
 void remove_user_from_channel(char *user, char *chan);
 void update_nick(char *old_nick, char *new_nick);
 void update_host(char *nick, char *host);
+void update_user(char *nick, char *user);
+void update_server(char *nick, char *server);
+void update_realname(char *nick, char *real_name);
 void user_quit(char *nick);
 void set_realname(char *nick, char *real_name);
 

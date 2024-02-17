@@ -71,9 +71,6 @@ void add_user_to_channel(char *user, char *host, char *chan)
         return;
     }
 
-    if (user_exists(chan, user) == 1)
-        return;
-
     // parse mode prefix symbols and remove them
     if (user[0] == '@')
     {
@@ -100,6 +97,9 @@ void add_user_to_channel(char *user, char *host, char *chan)
         is_admin = true;
         user++;
     }
+
+    if (user_exists(chan, user) == 1)
+        return;
 
     printf("Adding user %s!%s to channel %s\n", user, host, chan);
 
@@ -180,6 +180,53 @@ void update_host(char *nick, char *host)
     }
 }
 
+void update_user(char *nick, char *user)
+{
+    int i, j;
+
+    for (i = 0; i < chan_count; i++)
+    {
+        for (j = 0; j < channels[i]->user_count; j++)
+        {
+            if (!strcmp(channels[i]->users[j].nick, nick))
+            {
+                strlcpy(channels[i]->users[j].user, user, 50);
+            }
+        }
+    }
+}
+
+void update_server(char *nick, char *server)
+{
+    int i, j;
+
+    for (i = 0; i < chan_count; i++)
+    {
+        for (j = 0; j < channels[i]->user_count; j++)
+        {
+            if (!strcmp(channels[i]->users[j].nick, nick))
+            {
+                strlcpy(channels[i]->users[j].server, server, 256);
+            }
+        }
+    }
+}
+
+void update_realname(char *nick, char *real_name)
+{
+    int i, j;
+
+    for (i = 0; i < chan_count; i++)
+    {
+        for (j = 0; j < channels[i]->user_count; j++)
+        {
+            if (!strcmp(channels[i]->users[j].nick, nick))
+            {
+                strlcpy(channels[i]->users[j].real_name, real_name, 256);
+            }
+        }
+    }
+}
 
 void user_quit(char *nick)
 {

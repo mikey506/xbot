@@ -147,6 +147,8 @@ void irc_raw(struct irc_conn *bot, char *fmt, ...)
     vsnprintf(bot->out, sizeof bot->out, fmt, ap);
     va_end(ap);
 
+	sprintf(outbuf, "%s\r\n", bot->out);
+    printf("<< %s\n", outbuf);
 #ifdef _WIN32
 	sprintf(outbuf, "%s\r\n", bot->out);
 	send(bot->srv_fd, outbuf, strlen(outbuf), 0);
@@ -187,13 +189,11 @@ void irc_ctcp(struct irc_conn *bot, char *to, char *fmt, ...)
 
 void irc_parse_raw(struct irc_conn *bot, char *raw)
 {
-    char *user, *host, *par, *text, *chan, *nick, *nicks;
+    char *user, *host, *par, *text, *chan, *nick, *nicks, *tmp;
     user = bot->host;
 
     text = calloc(1, strlen(raw) + 1);
 	
-	printf("raw: %s", raw);
-
     if (!raw || !*raw)
     {
         return;
@@ -218,7 +218,7 @@ void irc_parse_raw(struct irc_conn *bot, char *raw)
     
     trim(par);
 
-	printf("dbug raw: %s\n", raw);
+	printf("dbug raw: %s\r\n", raw);
 
     if (!strcmp("PONG", raw))
     {
@@ -319,18 +319,12 @@ void irc_parse_raw(struct irc_conn *bot, char *raw)
 #endif
         irc_raw(bot, "NICK %s", bot->nick);
     }
-    else if (strstr("353", raw) != NULL)
+    else if (!strcmp("353", raw))
     {
-		printf("debug raw: %s\n", raw);
-        printf("debug par: %s, text: %s\n", par, text);
-        // par: BotName = #channel
-        // extract channel name
-
         chan = skip(par, ' ');
         chan = skip(chan, '=');
         chan = skip(chan, ' ');
 
-        // text is a list of nicks separated by spaces
 #ifdef _WIN32
         nicks = _strdup(text);
 #else
@@ -338,16 +332,40 @@ void irc_parse_raw(struct irc_conn *bot, char *raw)
 #endif
         nick  = strtok(nicks, " ");
 
-
-        printf("debug: chan: %s, nicks: %s\n", chan, nicks);
-
         while (nick)
         {
             add_user_to_channel(nick, "", chan);
+
+            tmp = nick;
+            if (nick[0] == '@' || nick[0] == '+' || nick[0] == '%' || nick[0] == '~' || nick[0] == '&')
+            {
+                tmp++;
+            }
+
+            irc_raw(bot, "WHO %s", tmp);
             nick = strtok(NULL, " ");
         }
 
         fire_handler(bot, IRC_NAMREPLY, chan, text);
+    }
+    else if (!strcmp(raw, "352"))
+    {
+        char *chan, *user, *host, *server, *nick, *flags, *realname;
+
+        chan = skip(par, ' ');
+        user = skip(chan, ' ');
+        host = skip(user, ' ');
+        server = skip(host, ' ');
+        nick = skip(server, ' ');
+        flags = skip(nick, ' ');
+        realname = skip(text, ' ');
+
+        update_user(nick, user);
+        update_host(nick, host);
+        update_server(nick, server);
+        update_realname(nick, realname);
+
+        fire_handler(bot, IRC_WHOREPLY, chan, user, host, server, nick, flags, realname);
     }
     else
     {

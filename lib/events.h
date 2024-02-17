@@ -18,6 +18,7 @@
 #define IRC_MOTD        "372"
 #define IRC_END_MOTD    "376"
 #define IRC_NAMREPLY    "353"
+#define IRC_WHOREPLY    "352"
 
 struct ev_handler
 {
