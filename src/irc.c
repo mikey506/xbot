@@ -315,7 +315,7 @@ void irc_parse_raw(struct irc_conn *bot, char *raw)
 #ifdef _WIN32
         _snprintf(bot->nick, sizeof bot->nick, "%s_", bot->nick);
 #else
-        snprintf(bot->nick, sizeof bot->nick, "%s_", bot->nick);
+        sprintf(bot->nick, "%s_", bot->nick);
 #endif
         irc_raw(bot, "NICK %s", bot->nick);
     }
