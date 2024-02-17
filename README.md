@@ -1,6 +1,6 @@
 # xbot
 
-Xbot is a modular C IRC bot.
+xbot is a modular IRC bot in C for Linux and Windows
 
 
 ## Building
@@ -17,5 +17,6 @@ Afterwords, just edit xbot.cfg and execute the xbot binary.
 These are commands which allow the bot's admin to control it once it's connected to the IRC server.
 
 * LOADMOD <module>
+* UNLOADMOD <module>
 * JOIN <channel>
 

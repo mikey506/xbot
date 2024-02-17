@@ -276,7 +276,7 @@ void irc_parse_raw(struct irc_conn *bot, char *raw)
         {
             add_channel(text);
             add_user_to_channel(user, host, text);
-            fire_handler(bot, JOIN, user, host, par);
+            fire_handler(bot, JOIN, user, host, text);
         }
     }
     else if (!strcmp("PART", raw))

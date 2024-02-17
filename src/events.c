@@ -9,10 +9,6 @@
 
 #ifdef _WIN32
 #include <ctype.h>
-
-#define SPF sprintf_s
-#else
-#define SPF sprintf
 #endif
 
 struct handler *privmsg_self;
@@ -162,13 +158,32 @@ void fire_handler(struct irc_conn *bot, char *type, ...)
         {
             if (!strcmp(bot->admin, usr))
             {
-                irc_notice(bot, usr, "Loading module: mods/%s.so", arg);
 #ifdef _WIN32
-                SPF(modpath, "./mods/%s.dll", arg);
+                irc_notice(bot, usr, "Loading module: mods/%s.dll", arg);
+                sprintf(modpath, "./mods/%s.dll", arg);
 #else
-                SPF(modpath, "./mods/%s.so", arg);
+                irc_notice(bot, usr, "Loading module: mods/%s.so", arg);
+                sprintf(modpath, "./mods/%s.so", arg);
 #endif
                 load_module(bot, usr, PRIVMSG_SELF, modpath);
+            }
+            else
+            {
+                irc_notice(bot, usr, "You are unauthorized to use this command.");
+            }
+        }
+        else if (!strcmp("UNLOADMOD", cmd))
+        {
+            if (!strcmp(bot->admin, usr))
+            {
+#ifdef _WIN32
+                irc_notice(bot, usr, "Unloading module: mods/%s.dll", arg);
+                sprintf(modpath, "./mods/%s.dll", arg);
+#else
+                irc_notice(bot, usr, "Unloading module: mods/%s.so", arg);
+                sprintf(modpath, "./mods/%s.so", arg);
+#endif
+                unload_module(bot, usr, modpath);
             }
             else
             {

@@ -75,7 +75,29 @@ void load_module(struct irc_conn *bot, char *where, char *stype, char *file)
 
 	((void(*)(void))mods->modules[mods->count].init)();
 
-	//FreeLibrary(libHandle);
+    mods->modules[mods->count].unload = GetProcAddress(mods->modules[mods->count].handle, "mod_unload");
+    if (mods->modules[mods->count].unload  == NULL)
+    {
+        DWORD err = GetLastError();
+
+        sprintf(error, "Error loading mod_unload() pointer for %s: %lu", file, err);
+        eprint("Error: %s\n", error);
+
+        if (strcmp("runtime", stype))
+        {
+            return;
+        }
+        else if (strcmp(PRIVMSG_CHAN, stype))
+        {
+            irc_privmsg(bot, where, error);
+        }
+        else
+        {
+            irc_notice(bot, where, error);
+        }
+
+        return;
+    }
 
 	if (strcmp("runtime", stype))
     {
@@ -136,9 +158,6 @@ void load_module(struct irc_conn *bot, char *where, char *stype, char *file)
 
     (*mods->modules[mods->count].init)();
 
-    //dlclose(handle);
-
-
     *(void **)(&mods->modules[mods->count].unload) = dlsym(mods->modules[mods->count].handle , "mod_unload");
     if ((error = dlerror()) != NULL)
     {
@@ -191,4 +210,33 @@ void load_module(struct irc_conn *bot, char *where, char *stype, char *file)
 #endif
 
     mods->count++;
+}
+
+void unload_module(struct irc_conn *bot, char *where, char *file)
+{
+    int i;
+    for (i = 0; i < mods->count; i++)
+    {
+        (*mods->modules[i].unload)();
+
+        if (strcmp(mods->modules[i].fname, file) == 0)
+        {
+#ifdef _WIN32
+            FreeLibrary(mods->modules[i].handle);
+#else
+            dlclose(mods->modules[i].handle);
+#endif
+
+            if (strcmp(PRIVMSG_CHAN, where))
+            {
+                irc_privmsg(bot, where, "Module '%s' unloaded.", file);
+            }
+            else
+            {
+                printf("Module '%s' unloaded.\n", file);
+            }
+
+            return;
+        }
+    }
 }
