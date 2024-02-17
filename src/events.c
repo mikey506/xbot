@@ -190,6 +190,19 @@ void fire_handler(struct irc_conn *bot, char *type, ...)
                 irc_notice(bot, usr, "You are unauthorized to use this command.");
             }
         }
+        else if (!strcmp("MODLIST", cmd))
+        {
+            if (!strcmp(bot->admin, usr))
+            {
+                list_modules(bot, usr);
+            }
+            else
+            {
+                irc_notice(bot, usr, "You are unauthorized to use this command.");
+            }
+        }
+
+        va_end(args);
     }
     
     for (i = 0; i < handlers_count; i++)

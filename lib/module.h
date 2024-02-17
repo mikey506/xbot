@@ -9,12 +9,12 @@
 #endif
 
 struct module {
-    char *name;
-    char *author;
-    char *version;
-    char *description;
+    char name[25];
+    char author[50];
+    char version[10];
+    char description[256];
 
-    char *fname;
+    char fname[256];
 
 #ifdef _WIN32
     HMODULE handle;
@@ -35,5 +35,9 @@ struct mods {
 void init_mods();
 void load_module(struct irc_conn *bot, char *where, char *stype, char *file);
 void unload_module(struct irc_conn *bot, char *where, char *file);
+void list_modules(struct irc_conn *bot, char *where);
+MY_API void register_module(char *name, char *author, char *version, char *description);
+MY_API void unregister_module(char *name);
+MY_API struct mods *get_mods();
 
 #endif

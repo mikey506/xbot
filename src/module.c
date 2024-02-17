@@ -24,7 +24,7 @@ void init_mods()
 void load_module(struct irc_conn *bot, char *where, char *stype, char *file)
 {
 	char *error = (char *)malloc(sizeof(char *)*1024);
-    mods->modules[mods->count].fname = file;
+    strlcpy(mods->modules[mods->count].fname, file, 256);
 #ifdef _WIN32
 
     mods->modules[mods->count].handle = LoadLibrary(file);
@@ -236,7 +236,65 @@ void unload_module(struct irc_conn *bot, char *where, char *file)
                 printf("Module '%s' unloaded.\n", file);
             }
 
+            while (i < mods->count)
+            {
+                mods->modules[i] = mods->modules[i+1];
+                i++;
+            }
+
             return;
         }
     }
+}
+
+void list_modules(struct irc_conn *bot, char *where)
+{
+    int i;
+    char *msg = malloc(512);
+    char *tmp = malloc(512);
+
+    for (i = 0; i < mods->count; i++)
+    {
+        sprintf(tmp, "%s (%s) by %s - %s", mods->modules[i].name, mods->modules[i].version, mods->modules[i].author, mods->modules[i].description);
+        irc_notice(bot, where, tmp);
+    }
+
+    free(msg);
+    free(tmp);
+}
+
+MY_API void register_module(char *name, char *author, char *version, char *description)
+{
+    if (mods->count >= 512)
+    {
+        eprint("Error: Too many modules loaded.\n");
+        return;
+    }
+
+    strlcpy(mods->modules[mods->count].name, name, 25);
+    strlcpy(mods->modules[mods->count].author, author, 50);
+    strlcpy(mods->modules[mods->count].version, version, 10);
+    strlcpy(mods->modules[mods->count].description, description, 256);
+}
+
+MY_API void unregister_module(char *name)
+{
+    int i;
+    for (i = 0; i < mods->count; i++)
+    {
+        if (strcmp(mods->modules[i].fname, name) == 0)
+        {
+            while (i < mods->count)
+            {
+                mods->modules[i] = mods->modules[i+1];
+                i++;
+            }
+            return;
+        }
+    }
+}
+
+MY_API struct mods *get_mods()
+{
+    return mods;
 }

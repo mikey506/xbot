@@ -31,12 +31,14 @@ MY_API void hello_join(struct irc_conn *bot, char *user, char *host, char *chan)
 
 MY_API void mod_init()
 {
+    register_module("hello", "Aaron Blakely", "v0.05", "Test module");
     add_handler(PRIVMSG_CHAN, hello);
     add_handler(JOIN, hello_join);
 }
 
 MY_API void mod_unload()
 {
+    unregister_module("hello");
     del_handler(PRIVMSG_CHAN, hello);
     del_handler(JOIN, hello_join);
 }

@@ -25,12 +25,14 @@ MY_API void up(struct irc_conn *bot, char *user, char *host, char *chan, char *t
 
 MY_API void mod_init()
 {
+    register_module("uptime", "Aaron Blakely", "v0.1", "Uptime module");
     printf("installing up handler\n");
 	add_handler(PRIVMSG_CHAN, up);
 }
 
 MY_API void mod_unload()
 {
+    unregister_module("uptime");
     printf("unloading up handler\n");
     del_handler(PRIVMSG_CHAN, up);
 }

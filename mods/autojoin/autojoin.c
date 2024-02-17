@@ -1,5 +1,6 @@
 #define MY_DLL_EXPORTS 1
 
+#include "module.h"
 #include "irc.h"
 #include "events.h"
 #include <stdio.h>
@@ -46,10 +47,12 @@ MY_API void aj(struct irc_conn *bot, char *text)
 
 MY_API void mod_init()
 {
+    register_module("autojoin", "Aaron Blakely", "v0.2", "Autojoin module");
 	add_handler(IRC_CONNECTED, aj);
 }
 
 MY_API void mod_unload()
 {
+    unregister_module("autojoin");
     del_handler(IRC_CONNECTED, aj);
 }

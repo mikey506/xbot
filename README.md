@@ -18,5 +18,6 @@ These are commands which allow the bot's admin to control it once it's connected
 
 * LOADMOD <module>
 * UNLOADMOD <module>
+* MODLIST
 * JOIN <channel>
 
