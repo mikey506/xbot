@@ -7,54 +7,57 @@
 #include <unistd.h> // For the sysinfo function
 #include <sys/sysinfo.h> // For the sysinfo function
 
-// Configuration file path
-#define CONFIG_FILE_PATH "xbox.cfg"
+#define CONFIG_FILE "xbot.cfg" // Update the configuration file name
 
-// Maximum length for configuration values
-#define MAX_VALUE_LENGTH 256
+char owner_nick[256] = ""; // Variable to store the owner's nickname
 
-// Structure to hold configuration settings
-struct Config {
-    char admin[MAX_VALUE_LENGTH];
-};
+// Function to read the owner's nickname from the config file
+void read_owner_nick() {
+    // Construct the full path to the configuration file
+    char config_path[256];
+    snprintf(config_path, sizeof(config_path), "./%s", CONFIG_FILE);
 
-// Global configuration instance
-struct Config config;
-
-// Function to load configuration from file
-int load_config() {
-    FILE *file = fopen(CONFIG_FILE_PATH, "r");
+    FILE *file = fopen(config_path, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error: Failed to open configuration file.\n");
-        return 0;
+        perror("Error opening config file");
+        exit(EXIT_FAILURE);
     }
 
-    // Read lines from the file
-    char line[MAX_VALUE_LENGTH];
+    printf("Opened config file successfully.\n");
+
+    char line[256];
     while (fgets(line, sizeof(line), file)) {
-        // Find the 'admin' setting
-        if (strstr(line, "admin = ") == line) {
-            // Extract the admin value
-            sscanf(line, "admin = \"%[^\"]\"", config.admin);
-            fclose(file);
-            return 1; // Configuration loaded successfully
+        char key[256], value[256];
+        if (sscanf(line, "%[^=]=%s", key, value) == 2) {
+            printf("Read line: %s\n", line);
+            if (strcmp(key, "admin") == 0) {
+                strcpy(owner_nick, value);
+                printf("Owner nickname set: %s\n", owner_nick);
+                break;
+            }
         }
     }
 
     fclose(file);
-    fprintf(stderr, "Error: 'admin' setting not found in configuration file.\n");
-    return 0;
 }
 
 MY_API void show_sysinfo(struct irc_conn *bot, char *user, char *host, char *chan, const char *text)
 {
+    printf("show_sysinfo called.\n");
+
     // Check if the user issuing the command is the owner
-    if (strcmp(user, config.admin) != 0)
+    printf("User: %s, Owner Nick: %s\n", user, owner_nick);
+    if (strcmp(user, owner_nick) != 0) {
+        printf("User is not the owner.\n");
         return;
+    }
 
     // Check if the command is "!sysinfo"
-    if (strcmp(text, "!sysinfo") != 0)
+    printf("Text: %s\n", text);
+    if (strcmp(text, "!sysinfo") != 0) {
+        printf("Not the !sysinfo command.\n");
         return;
+    }
 
     struct sysinfo si;
     if (sysinfo(&si) != 0)
@@ -77,13 +80,8 @@ MY_API void show_sysinfo(struct irc_conn *bot, char *user, char *host, char *cha
 
 MY_API void mod_init()
 {
-    // Load configuration
-    if (!load_config()) {
-        fprintf(stderr, "Error: Failed to load configuration.\n");
-        return;
-    }
-
     register_module("sysinfo", "Your Name", "v1.0", "Show system information with !sysinfo command");
+    read_owner_nick(); // Read owner's nickname from config file
     add_handler(PRIVMSG_CHAN, show_sysinfo);
 }
 
