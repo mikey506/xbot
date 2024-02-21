@@ -4,9 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <curl/curl.h>
-
-size_t write_callback(void *ptr, size_t size, size_t nmemb, char *data);
 
 void fetch_metadata(struct irc_conn *bot, const char *url, const char *chan);
 
@@ -18,47 +15,32 @@ void mod_unload();
 
 void fetch_metadata(struct irc_conn *bot, const char *url, const char *chan)
 {
-    CURL *curl;
-    CURLcode res;
+    FILE *fp;
+    char buffer[1024];
     char title[512] = "";
     char description[512] = "";
 
-    // Initialize libcurl
-    curl = curl_easy_init();
-    if (curl) {
-        // Set the URL to fetch metadata from
-        curl_easy_setopt(curl, CURLOPT_URL, url);
-
-        // Set up callbacks to receive title and description
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, title);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, description);
-
-        // Perform the request
-        res = curl_easy_perform(curl);
-        if (res != CURLE_OK) {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-        }
-        else {
-            // Format the message with retrieved metadata
-            char msg[1024];
-            snprintf(msg, sizeof(msg), "%s - %s - ( %s )", title, description, url);
-
-            // Send the message to the channel
-            irc_privmsg(bot, (char *)chan, msg);
-        }
-
-        // Clean up
-        curl_easy_cleanup(curl);
+    // Execute curl command and read output
+    fp = popen("curl -sL \"$1\" | grep -oP '(?<=<title>)(.*)(?=</title>)'", "r");
+    if (fp == NULL) {
+        fprintf(stderr, "Failed to run curl command\n");
+        return;
     }
-}
 
-size_t write_callback(void *ptr, size_t size, size_t nmemb, char *data)
-{
-    // Concatenate the received data
-    strcat(data, (char *)ptr);
-    return size * nmemb;
+    // Read the title from the command output
+    if (fgets(buffer, sizeof(buffer), fp) != NULL) {
+        strncpy(title, buffer, sizeof(title));
+        title[strcspn(title, "\r\n")] = '\0'; // Remove trailing newline
+    }
+
+    pclose(fp);
+
+    // Construct the message
+    char msg[1024];
+    snprintf(msg, sizeof(msg), "%s - %s - ( %s )", title, description, url);
+
+    // Send the message to the channel
+    irc_privmsg(bot, (char *)chan, msg);
 }
 
 void handle_privmsg(struct irc_conn *bot, char *user, char *host, char *chan, const char *text)
