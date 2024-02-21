@@ -1,14 +1,15 @@
 CC=gcc
-CFLAGS=-g -std=gnu99 -I../../lib
-LDFLAGS=
+CFLAGS=-g -std=gnu99 -fPIC -I../../lib
+LDFLAGS=-lcurl
 SRC=./metafetch.c
 OBJ=./mods/metafetch.so
 
 main: $(OBJ)
+	@echo "All Done!"
 
 $(OBJ): $(SRC)
+	mkdir -p mods
 	$(CC) -shared -o $@ $^ $(CFLAGS) $(LDFLAGS)
-	@echo "All Done!"
 
 clean:
 	rm -f $(OBJ)
