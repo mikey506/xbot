@@ -5,46 +5,35 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef _WIN32
-// Windows-specific code
-#else
-#include <unistd.h>
-#endif
-
-MY_API void up(struct irc_conn *bot, char *user, char *host, char *chan, char *text)
+MY_API void kick_ban_on_allah(struct irc_conn *bot, char *user, char *host, char *chan, const char *text)
 {
-#ifdef _WIN32
-    // Windows-specific code
-#else
-    printf("dbug up called: %s!%s %s\n", user, host, text);
-
+    // Check if the text contains the word "Allah"
     if (strstr(text, "Allah") != NULL)
     {
-        // Kick and ban the user
-        irc_kick(bot, chan, user, "Spamming forbidden content");
-        irc_ban(bot, chan, host);
+        // Construct the raw IRC commands to kick and ban the user
+        char kick_command[512];
+        char ban_command[512];
+
+        snprintf(kick_command, sizeof(kick_command), "KICK %s %s :Spamming forbidden content", chan, user);
+        snprintf(ban_command, sizeof(ban_command), "MODE %s +b %s", chan, host);
+
+        // Send the raw IRC commands
+        irc_raw(bot, kick_command);
+        irc_raw(bot, ban_command);
+
+        printf("%s was kicked and banned for mentioning Allah\n", user);
     }
-#endif
 }
 
 MY_API void mod_init()
 {
-#ifdef _WIN32
-    // Windows-specific initialization
-#else
-    register_module("uptime", "Aaron Blakely", "v0.1", "Uptime module");
-    printf("installing up handler\n");
-    add_handler(PRIVMSG_CHAN, up);
-#endif
+    register_module("kick_ban_allah", "Your Name", "v1.0", "Kick and ban users who mention Allah");
+    add_handler(PRIVMSG_CHAN, kick_ban_on_allah);
 }
 
 MY_API void mod_unload()
 {
-#ifdef _WIN32
-    // Windows-specific cleanup
-#else
-    unregister_module("uptime");
-    printf("unloading up handler\n");
-    del_handler(PRIVMSG_CHAN, up);
-#endif
+    unregister_module("kick_ban_allah");
+    del_handler(PRIVMSG_CHAN, kick_ban_on_allah);
 }
+
